@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+<com.google.android.material.card.MaterialCardView
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="10dp"
+    android:layout_marginHorizontal="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginVertical="15dp"
+    >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/messenger_bubble_small_blue"
+                android:scaleType="fitXY"
+                android:id="@+id/service_img"
+                android:layout_gravity="center"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15dp"
+                    android:hint="Service Name"
+                    android:gravity="center"
+                    android:layout_marginVertical="2dp"
+                    android:id="@+id/service_name"
+                    android:fontFamily="@font/aldrich"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:hint="Service Price"
+                    android:gravity="center"
+                    android:fontFamily="@font/adamina"
+                    android:layout_marginVertical="2dp"
+                    android:id="@+id/service_price"
+                    />
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="Book Now"
+                    android:layout_gravity="center"
+                    android:id="@+id/book_service"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

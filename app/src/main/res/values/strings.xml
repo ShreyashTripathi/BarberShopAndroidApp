@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">LehBarber</string>
+    <string name="facebook_app_id">675241969985775</string>
+    <string name="title_activity_first_page_2">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Search</string>
+    <string name="title_notifications">Appointment</string>
+    <string name="title_settings">Settings</string>
+    <string name="vertical_button">B\no\no\nk\n\nN\no\nw</string>
+</resources>

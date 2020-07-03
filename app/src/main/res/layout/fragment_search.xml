@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.search.SearchFragment"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="50dp"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Find your Salons"
+        android:textSize="35dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/aldrich"
+        android:textStyle="bold"
+        />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="20dp"
+        android:layout_margin="10dp">
+
+        <androidx.appcompat.widget.SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:queryHint="Type in the name of Salon"
+            app:goIcon="@android:drawable/arrow_up_float"
+            android:id="@+id/search_view_salon"
+            app:iconifiedByDefault="false"
+            />
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Popular Salons"
+            android:textSize="20dp"
+            android:fontFamily="@font/ubuntu_light"
+            android:textStyle="bold"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/salon_list_rv"/>
+
+
+</LinearLayout>

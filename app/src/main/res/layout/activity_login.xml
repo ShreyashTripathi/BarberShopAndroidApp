@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/back_pic1"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="com.example.barbershop.LoginActivity"
+    android:orientation="vertical"
+    >
+
+
+    <ProgressBar
+        android:id="@+id/progressBarLogin"
+        android:indeterminate="true"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textView"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Welcome to LehBarber"
+        android:textColor="#ffffff"
+        android:textSize="30dp"
+        android:textStyle="bold|italic"
+        />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textView2"
+        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginBottom="24dp"
+        android:text="Sign In to connect with us"
+        android:textSize="20dp"
+        android:textColor="#ffffff"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:id="@+id/userNameInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textColorHint="@color/primaryOnColor"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="@color/boxStrokeColorFocused"
+        app:endIconMode="clear_text"
+        app:endIconTint="@color/primaryLightColor"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/design_default_color_error"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/primaryTextColor"
+        app:hintTextColor="@color/primaryOnColor"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/userNameEditText"
+            style="@style/TextAppearance.Subtitle1"
+            />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+
+        android:id="@+id/passwordInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="PassWord"
+        android:textColorHint="@color/primaryOnColor"
+        app:boxStrokeColor="@color/boxStrokeColorFocused"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/design_default_color_error"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/primaryTextColor"
+        app:hintTextColor="@color/primaryOnColor"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/primaryLightColor">
+
+        <com.google.android.material.textfield.TextInputEditText
+
+            android:id="@+id/passwordEditText"
+            style="@style/TextAppearance.Subtitle1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:id="@+id/forgotPaswword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="Forgot Password?"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:onClick="forgotPassword"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="300dp"
+        android:height="50dp"
+        android:background="#ffffff"
+        android:elevation="50dp"
+        android:text="LOGIN"
+        app:shapeAppearance="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        />
+
+
+
+    <TextView
+        android:id="@+id/SignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Don't have an account? Sign Up"
+        android:textSize="20dp"
+        android:textColor="#ffffff"
+        android:layout_gravity="center"
+        />
+
+
+
+</LinearLayout>

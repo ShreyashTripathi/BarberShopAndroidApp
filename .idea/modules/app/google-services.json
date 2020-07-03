@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "562051214477",
+    "firebase_url": "https://xomato-71d6d.firebaseio.com",
+    "project_id": "xomato-71d6d",
+    "storage_bucket": "xomato-71d6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562051214477:android:976d96129ff7eb896c46c4",
+        "android_client_info": {
+          "package_name": "com.example.myxomato"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562051214477-p72l7hrke601v59617hhe5p3cc5tk69a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myxomato",
+            "certificate_hash": "7c6b3a9ae63d1d5bfc8dce5bfdb05cc7b0736e2a"
+          }
+        },
+        {
+          "client_id": "562051214477-om19ms2cag3ik61072fbbtefgakjoh44.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvMWhnh4ShA70xQoODUxKLa5ftDSjeCVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562051214477-om19ms2cag3ik61072fbbtefgakjoh44.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

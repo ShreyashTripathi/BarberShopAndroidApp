@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.barbershop">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/logo_barber"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/logo_barber"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.example.barbershop.ui.book_appointment.BookAppointment"/>
+        <activity android:name="com.example.barbershop.ui.barber_shop.BarberShopActivity" />
+        <activity android:name="com.example.barbershop.ForgotPassword" />
+        <activity android:name="com.example.barbershop.LocationTemp" />
+        <activity android:name="com.example.barbershop.FirstPage_2"
+            android:theme="@style/NoActionBarFragment"
+            />
+        <activity android:name="com.example.barbershop.SignUpActivity" />
+        <activity android:name="com.example.barbershop.LoginActivity" />
+        <activity android:name="com.example.barbershop.FirstPage" />
+        <activity
+            android:name="com.example.barbershop.MainActivity"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBvMWhnh4ShA70xQoODUxKLa5ftDSjeCVg" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+    </application>
+
+</manifest>
