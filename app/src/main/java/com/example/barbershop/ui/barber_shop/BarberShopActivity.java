@@ -1,8 +1,11 @@
 package com.example.barbershop.ui.barber_shop;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -13,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.barbershop.R;
@@ -20,11 +25,15 @@ import com.example.barbershop.models.BarberService;
 import com.example.barbershop.models.Shops;
 import com.example.barbershop.ui.book_appointment.BookAppointment;
 import com.google.android.material.button.MaterialButton;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class BarberShopActivity extends AppCompatActivity {
-    private Shops shop;
+    private MutableLiveData<Shops> shopData;
     private ShopViewModel shopViewModel;
 
     private ImageView shop_img;
@@ -34,7 +43,8 @@ public class BarberShopActivity extends AppCompatActivity {
     private CheckBox favButton;
 
     private ArrayList<BarberService> services;
-    private double latitude,longitude;
+    private Pair<Double,Double> loc_coordinates;
+    private String shop_name_for_map_label;
     private LinearLayout insertPoint;
 
     @Override
@@ -45,47 +55,57 @@ public class BarberShopActivity extends AppCompatActivity {
         initialize();
         Intent intent = getIntent();
         String shop_name_text = intent.getStringExtra("shop_name");
-        shop = shopViewModel.getShopData(shop_name_text);
-        shop_img.setImageResource(shop.getShop_img());
-        shop_name.setText(shop.getShopName());
-        shop_desc.setText(shop.getAbout());
-        shop_ratings.setRating(shop.getRatings());
-        shop_loc.setText(shop.getLocation());
-        services = shop.getServices();
-        call_button.setText(shop.getPhone());
+        shopData = shopViewModel.getShopData(shop_name_text);
+        shopData.observe(BarberShopActivity.this, new Observer<Shops>() {
+            @Override
+            public void onChanged(Shops shop) {
+                Picasso.with(BarberShopActivity.this).load(shop.getShop_img()).into(shop_img);
+                shop_name.setText(shop.getShopName());
+                shop_name_for_map_label = shop.getShopName();
+                shop_desc.setText(shop.getAbout());
+                shop_ratings.setRating(shop.getRatings());
+                shop_loc.setText(getAddress(new Pair<>(shop.getLatitude(),shop.getLongitude())));
+                loc_coordinates = new Pair<>(shop.getLatitude(),shop.getLongitude());
+                services = shop.getServices();
+                call_button.setText(shop.getPhone());
 
-        insertPoint = findViewById(R.id.service_list);
+                insertPoint = findViewById(R.id.service_list);
 
-        // fill in any details dynamically here
-        for(final BarberService _service : services)
-        {
-            LayoutInflater vi = LayoutInflater.from(BarberShopActivity.this);
-            View v = vi.inflate(R.layout.service_card, null,false);
-            v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
+                // fill in any details dynamically here
+                for(final BarberService _service : services)
+                {
+                    LayoutInflater vi = LayoutInflater.from(BarberShopActivity.this);
+                    View v = vi.inflate(R.layout.service_card, null,false);
+                    v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
 
-            ImageView iv = v.findViewById(R.id.service_img);
-            iv.setImageResource(_service.getService_img());
+                    ImageView iv = v.findViewById(R.id.service_img);
+                    //iv.setImageURI(Uri.parse(_service.getService_img()));
+                    Picasso.with(BarberShopActivity.this).load(_service.getService_img()).into(iv);
 
-            TextView tv1 = v.findViewById(R.id.service_name);
-            tv1.setText(_service.getService_name());
+                    TextView tv1 = v.findViewById(R.id.service_name);
+                    tv1.setText(_service.getService_name());
 
-            TextView tv2 = v.findViewById(R.id.service_price);
-            tv2.setText(String.format("₹%s", _service.getService_price()));
-            MaterialButton button = v.findViewById(R.id.book_service);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(BarberShopActivity.this, "Book Service!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(BarberShopActivity.this, BookAppointment.class);
-                    intent.putExtra("shop_name",shop_name.getText().toString());
-                    intent.putExtra("service_booked",_service.getService_name());
-                    startActivity(intent);
+                    TextView tv2 = v.findViewById(R.id.service_price);
+                    tv2.setText(String.format("₹%s", _service.getService_price()));
+                    MaterialButton button = v.findViewById(R.id.book_service);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(BarberShopActivity.this, "Book Service!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(BarberShopActivity.this, BookAppointment.class);
+                            intent.putExtra("shop_name",shop_name.getText().toString());
+                            intent.putExtra("service_booked",_service.getService_name());
+                            startActivity(intent);
 
+                        }
+                    });
+
+                    insertPoint.addView(v);
                 }
-            });
+            }
+        });
 
-            insertPoint.addView(v);
-        }
+
 
         favButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,8 +133,47 @@ public class BarberShopActivity extends AppCompatActivity {
     }
 
 
+    public String getAddress(Pair<Double, Double> coordinates) {
+        Geocoder geocoder;
+        List<Address> addresses = null;
+        geocoder = new Geocoder(BarberShopActivity.this, Locale.getDefault());
+        double latitude = coordinates.first;
+        double longitude = coordinates.second;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String address_ = "ADDRESS";
+        if (addresses != null) {
+            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+            String knownName = addresses.get(0).getFeatureName();
+
+            address_ = String.format("%s,%s", address.split(",", 0)[1], address.split(",", 0)[2]);
+
+        }
+        return address_;
+    }
+
     public void goToShopLocation(View view) {
         Toast.makeText(this, "Go to Shop Location!", Toast.LENGTH_SHORT).show();
+        double latitude = loc_coordinates.first;
+        double longitude = loc_coordinates.second;
+        Uri gmmIntentUri = Uri.parse("geo:0,0?z=20&q="+latitude+","+longitude+"("+shop_name_for_map_label+")");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }
+        else
+        {
+            Toast.makeText(this, "Can not show the location on map!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void callButton(View view) {

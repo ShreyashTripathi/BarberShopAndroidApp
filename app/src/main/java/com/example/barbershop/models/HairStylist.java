@@ -1,27 +1,33 @@
 package com.example.barbershop.models;
 
 public class HairStylist {
-    private int profile_pic;
+    private String profile_pic_url;
     private float rating;
     private String phone_no;
     private String name;
+    private String shop_name;
+    private String gender;
+    private String shop_type;
 
     public HairStylist() {
     }
 
-    public HairStylist(int profile_pic, float rating, String phone_no, String name) {
-        this.profile_pic = profile_pic;
+    public HairStylist(String profile_pic_url, float rating, String phone_no, String name, String shop_name, String gender, String shop_type) {
+        this.profile_pic_url = profile_pic_url;
         this.rating = rating;
         this.phone_no = phone_no;
         this.name = name;
+        this.shop_name = shop_name;
+        this.gender = gender;
+        this.shop_type = shop_type;
     }
 
-    public int getProfile_pic() {
-        return profile_pic;
+    public String getProfile_pic_url() {
+        return profile_pic_url;
     }
 
-    public void setProfile_pic(int profile_pic) {
-        this.profile_pic = profile_pic;
+    public void setProfile_pic_url(String profile_pic_url) {
+        this.profile_pic_url = profile_pic_url;
     }
 
     public float getRating() {
@@ -46,5 +52,29 @@ public class HairStylist {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getShop_name() {
+        return shop_name;
+    }
+
+    public void setShop_name(String shop_name) {
+        this.shop_name = shop_name;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getShop_type() {
+        return shop_type;
+    }
+
+    public void setShop_type(String shop_type) {
+        this.shop_type = shop_type;
     }
 }

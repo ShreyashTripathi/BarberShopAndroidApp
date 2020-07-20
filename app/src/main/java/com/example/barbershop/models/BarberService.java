@@ -3,12 +3,12 @@ package com.example.barbershop.models;
 public class BarberService {
     private String service_name;
     private String service_price;
-    private int service_img;
+    private String service_img;
 
     public BarberService() {
     }
 
-    public BarberService(String service_name, String service_price,int service_img) {
+    public BarberService(String service_name, String service_price,String service_img) {
         this.service_name = service_name;
         this.service_price = service_price;
         this.service_img = service_img;
@@ -30,11 +30,11 @@ public class BarberService {
         this.service_price = service_price;
     }
 
-    public int getService_img() {
+    public String getService_img() {
         return service_img;
     }
 
-    public void setService_img(int service_img) {
+    public void setService_img(String service_img) {
         this.service_img = service_img;
     }
 }

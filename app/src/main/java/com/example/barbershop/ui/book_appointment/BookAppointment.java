@@ -2,6 +2,7 @@ package com.example.barbershop.ui.book_appointment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CalendarView;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +35,7 @@ public class BookAppointment extends AppCompatActivity {
     BookAppointmentViewModel viewModel;
 
     LinearLayout available_timings;
+    private String TAG = "BookAppointment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +69,15 @@ public class BookAppointment extends AppCompatActivity {
         String service_booked = intent.getStringExtra("service_booked");
         service_booked_tv.setText(service_booked);
 
-        ArrayList<HairStylist> available_barbers = viewModel.getHairStylistList();
-        available_barber_rv.setAdapter(new HairStylistAdapter(available_barbers,BookAppointment.this));
+        MutableLiveData<ArrayList<HairStylist>> available_barbers = viewModel.getHairStylistList(shop_name);
+        available_barbers.observe(BookAppointment.this, new Observer<ArrayList<HairStylist>>() {
+            @Override
+            public void onChanged(ArrayList<HairStylist> hairStylists) {
+                available_barber_rv.setAdapter(new HairStylistAdapter(hairStylists,BookAppointment.this));
+                Log.println(Log.INFO,TAG,"HairStylist for a shop set!");
+            }
+        });
+
 
         ArrayList<String> available_slots = viewModel.getAvailableTimings();
 

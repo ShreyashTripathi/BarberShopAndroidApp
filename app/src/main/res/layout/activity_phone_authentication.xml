@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="com.example.barbershop.PhoneAuthentication"
+    android:orientation="vertical"
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginBottom="32dp"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/layout_shape"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textView"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="20dp"
+            android:text="Welcome to LehBarber"
+            android:textColor="#ffffff"
+            android:textSize="30dp"
+            android:textStyle="bold|italic"
+            />
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textView2"
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginBottom="10dp"
+            android:text="Sign In to connect with us"
+            android:textSize="20dp"
+            android:textColor="#ffffff"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+
+            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginBottom="10dp"
+            android:text="OTP Verification"
+            android:textSize="20dp"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            />
+
+        <ProgressBar
+            android:id="@+id/progressBarOtpAuth"
+            android:indeterminate="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_marginBottom="10dp"
+            />
+
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone Number for OTP verification"
+        android:id="@+id/phone_number_for_auth_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="@color/boxStrokeColorFocused"
+        app:endIconMode="clear_text"
+        app:endIconTint="@color/primaryLightColor"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/design_default_color_error"
+        app:helperTextEnabled="true"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/phone_number_for_auth"
+            style="@style/TextAppearance.Subtitle1"
+            android:inputType="phone"
+            />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+
+        android:id="@+id/otp_for_auth_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="OTP"
+
+        app:boxStrokeColor="@color/boxStrokeColorFocused"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/design_default_color_error"
+        app:helperTextEnabled="true"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+
+            style="@style/TextAppearance.Subtitle1"
+            android:id="@+id/otp_for_auth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/send_otp_for_auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="300dp"
+        android:height="50dp"
+        android:background="#ffffff"
+        android:elevation="50dp"
+        android:text="SEND OTP"
+        app:shapeAppearance="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/verify_otp_for_auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="300dp"
+        android:height="50dp"
+        android:background="#ffffff"
+        android:elevation="50dp"
+        android:text="VERIFY"
+        android:layout_marginTop="20dp"
+        app:shapeAppearance="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/resend_code_for_auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="300dp"
+        android:height="50dp"
+        android:background="#ffffff"
+        android:elevation="50dp"
+        android:text="RESEND CODE"
+        android:layout_marginTop="20dp"
+        app:shapeAppearance="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        />
+
+
+
+
+
+
+
+</LinearLayout>

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.barbershop.R;
 import com.example.barbershop.models.HairStylist;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -38,7 +39,8 @@ public class HairStylistAdapter extends RecyclerView.Adapter<HairStylistAdapter.
     @Override
     public void onBindViewHolder(@NonNull HairStylistAdapter.HairStylistViewHolder holder, int position) {
         HairStylist hairStylist = hairStylists.get(position);
-        holder.h_s_img.setImageResource(hairStylist.getProfile_pic());
+        //holder.h_s_img.setImageResource(hairStylist.getProfile_pic());
+        Picasso.with(context).load(hairStylist.getProfile_pic_url()).into(holder.h_s_img);
         holder.phone_no.setText(hairStylist.getPhone_no());
         holder.name.setText(hairStylist.getName());
         holder.ratingBar.setRating(hairStylist.getRating());

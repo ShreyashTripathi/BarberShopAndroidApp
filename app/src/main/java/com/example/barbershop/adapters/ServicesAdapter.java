@@ -1,6 +1,7 @@
 package com.example.barbershop.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class ServicesAdapter extends RecyclerView.Adapter<ServicesAdapter.Servic
     @Override
     public void onBindViewHolder(@NonNull ServiceViewHolder holder, int position) {
         BarberService service = serviceArrayList.get(position);
-        holder.service_img.setImageResource(service.getService_img());
+        holder.service_img.setImageURI(Uri.parse(service.getService_img()));
         holder.service_name.setText(service.getService_name());
         holder.service_price.setText(service.getService_price());
         holder.book_button.setOnClickListener(new View.OnClickListener() {

@@ -1,6 +1,7 @@
 package com.example.barbershop;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -68,9 +69,11 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     FirebaseFirestore firestore;
     private static final String USER_COLLECTION_PATH = "Users";
-    private boolean phone_flag;
+
     private final String PASSWORD_FIELD = "password";
     private final String EMAIL_FIELD = "email";
+    private SharedPreferences mPreferences;
+    private String sharedPrefFile = "login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,8 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_forgot_password);
         initialize();
 
+
+        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         // Restore instance state
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
@@ -88,10 +93,7 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
         verify_otp.setOnClickListener(this);
         change_password.setOnClickListener(this);
 
-
-
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
                 // This callback will be invoked in two situations:
@@ -161,6 +163,36 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
         // [END phone_auth_callbacks]
 }
 
+    private void initialize() {
+        phoneInputLayout = findViewById(R.id.phoneResetPassInputLayout);
+        otpInputLayout = findViewById(R.id.otpResetPassInputLayout);
+        passwordInputLayout = findViewById(R.id.passwordResetPassLayout);
+        confirmPasswordInputLayout = findViewById(R.id.repeatPasswordResetPassLayout);
+
+        phoneInputEditText = findViewById(R.id.phoneResetPassEditText);
+        otpInputEditText = findViewById(R.id.otpResetPassEditText);
+        passwordInputEditText = findViewById(R.id.passwordResetPassEditText);
+        confirmPasswordInputEditText = findViewById(R.id.repeatPasswordResetPassEditText);
+        send_otp = findViewById(R.id.send_otp);
+        buttonResend = findViewById(R.id.resend_code);
+        verify_otp = findViewById(R.id.verify_with_otp);
+        change_password = findViewById(R.id.change_password);
+
+        firestore = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        //verifyButton.setOnClickListener(null);
+        enableViews(phoneInputLayout,send_otp);
+        disableViews(otpInputLayout,passwordInputLayout,confirmPasswordInputLayout,verify_otp,buttonResend,change_password);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        inputCredentialsVerification();
+
+    }
+
     // [START on_start_check_user]
     @Override
     public void onStart() {
@@ -191,7 +223,7 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
 
     private void startPhoneNumberVerification(String phoneNumber) {
 
-        phone_flag = true;
+
         // [START start_phone_auth]
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 "+91"+phoneNumber,        // Phone number to verify
@@ -256,9 +288,7 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
         });
     }
 
-    private void setFlag(boolean b) {
-        phone_flag = b;
-    }
+
 
     private void verifyPhoneNumberWithCode(String verificationId, String code) {
         // [START verify_with_code]
@@ -444,6 +474,11 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
                 if(mAuth.getCurrentUser() != null)
                     mAuth.signOut();         //After updating the password , sign out the user
                 signInFirebaseUser(email,password);               //Sign In With updated Password
+
+                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                preferencesEditor.putString("login_type", "FirebaseSignIn");
+                preferencesEditor.apply();
+
                 startActivity(new Intent(ForgotPassword.this,FirstPage.class));
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -469,6 +504,7 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
                 .getCredential(email, password);
 
         // Prompt the user to re-provide their sign-in credentials
+        assert user != null;
         user.reauthenticate(credential)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -493,35 +529,7 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void initialize() {
-        phoneInputLayout = findViewById(R.id.phoneResetPassInputLayout);
-        otpInputLayout = findViewById(R.id.otpResetPassInputLayout);
-        passwordInputLayout = findViewById(R.id.passwordResetPassLayout);
-        confirmPasswordInputLayout = findViewById(R.id.repeatPasswordResetPassLayout);
 
-        phoneInputEditText = findViewById(R.id.phoneResetPassEditText);
-        otpInputEditText = findViewById(R.id.otpResetPassEditText);
-        passwordInputEditText = findViewById(R.id.passwordResetPassEditText);
-        confirmPasswordInputEditText = findViewById(R.id.repeatPasswordResetPassEditText);
-        send_otp = findViewById(R.id.send_otp);
-        buttonResend = findViewById(R.id.resend_code);
-        verify_otp = findViewById(R.id.verify_with_otp);
-        change_password = findViewById(R.id.change_password);
-
-        firestore = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        //verifyButton.setOnClickListener(null);
-        enableViews(phoneInputLayout,send_otp);
-        disableViews(otpInputLayout,passwordInputLayout,confirmPasswordInputLayout,verify_otp,buttonResend,change_password);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        inputCredentialsVerification();
-
-    }
 
     private void inputCredentialsVerification() {
 

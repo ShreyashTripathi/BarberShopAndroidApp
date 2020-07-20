@@ -14,9 +14,9 @@ public class Shops{
     private String phone;
     private int waiting_list;
     private String type;
-    private int shop_img;
+    private String shop_img;
 
-    public Shops(String shopName, String location, double latitude, double longitude, String about, float ratings, ArrayList<BarberService> services, String phone, int waiting_list, String type, int shop_img) {
+    public Shops(String shopName, String location, double latitude, double longitude, String about, float ratings, ArrayList<BarberService> services, String phone, int waiting_list, String type, String shop_img) {
         this.shopName = shopName;
         this.location = location;
         this.latitude = latitude;
@@ -113,11 +113,11 @@ public class Shops{
         this.type = type;
     }
 
-    public int getShop_img() {
+    public String getShop_img() {
         return shop_img;
     }
 
-    public void setShop_img(int shop_img) {
+    public void setShop_img(String shop_img) {
         this.shop_img = shop_img;
     }
 }

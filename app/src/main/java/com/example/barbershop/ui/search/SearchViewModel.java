@@ -1,46 +1,71 @@
 package com.example.barbershop.ui.search;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.barbershop.R;
-import com.example.barbershop.models.BarberService;
 import com.example.barbershop.models.Shops;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+import global_class.MyGlobalClass;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 public class SearchViewModel extends ViewModel {
 
+    private static final String TAG ="search_view_model" ;
+    private  static MutableLiveData< ArrayList<Shops> > _shopsArrayList;
 
 
     public SearchViewModel() {
+        Log.println(Log.INFO,TAG,"SearchViewModel() running!");
+        _shopsArrayList = new MutableLiveData<>();
 
     }
 
-    public ArrayList<Shops> getShopList()
+
+    public MutableLiveData< ArrayList<Shops> > getShopList()
     {
-        ArrayList<Shops> shopsArrayList = new ArrayList<>();
-        shopsArrayList.add(setShopData("Platinum Barber Shop"));
-        shopsArrayList.add(setShopData("Pappu Salon"));
-        shopsArrayList.add(setShopData("Kallu Salon"));
-        shopsArrayList.add(setShopData("Punjabi Style Salon"));
-        shopsArrayList.add(setShopData("Bihar Salon wale"));
+        Log.println(Log.INFO,TAG,"getShopList() running!");
+        FirebaseFirestore db  = FirebaseFirestore.getInstance();
+        String SHOPS_COLLECTION_PATH = "Shops";
+        final CollectionReference shops = db.collection(SHOPS_COLLECTION_PATH);
+        final MyGlobalClass myGlobalClass = (MyGlobalClass) getApplicationContext();
+        final String gender_ = myGlobalClass.getGender();
+        shops.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            ArrayList<Shops> shopsArrayList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Shops shop = document.toObject(Shops.class);
+                                if(shop.getType().equals(gender_ + " Salon") || shop.getType().equals("Unisex Salon"))
+                                    shopsArrayList.add(shop);
+                            }
+                            //shopsArrayList               <------------ This arrayList is to be returned from the function.
+                            _shopsArrayList.setValue(shopsArrayList);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
-        return shopsArrayList;
+        return _shopsArrayList;
     }
 
-    private Shops setShopData(String shopName) {
-        // set the shop object data from cloud db
 
-        Shops shop = new Shops();
-        ArrayList<BarberService> services_list = new ArrayList<>();
-        services_list.add(new BarberService("Cutting","100", R.drawable.location_2));
-        services_list.add(new BarberService("Hair Color","300",R.drawable.location_2));
-        services_list.add(new BarberService("Hair Straighten","700",R.drawable.location_2));
-        services_list.add(new BarberService("Manicure","1000",R.drawable.location_2));
-        services_list.add(new BarberService("Pedicure","900",R.drawable.location_2));
 
-        shop = new Shops(shopName,"Krishna Nagar",0.0,0.0,"Good population in human society is the basic principle for peace,prosperity and spiritual progress in life. The varriisrama religion's principles were so designed that the good population would prevail in society.",3.5f,services_list,"+917905334848",2,"Unisex Salon", R.drawable.shop1);
-        return shop;
-    }
 
 }
+
+

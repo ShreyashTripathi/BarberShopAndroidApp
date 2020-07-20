@@ -21,11 +21,11 @@
             android:orientation="vertical"
             android:padding="5dp"
             >
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:id="@+id/h_s_img"
-                android:src="@mipmap/logo_barber"
+                android:src="@drawable/ic_baseline_person_24"
                 />
             <TextView
                 android:layout_width="match_parent"
@@ -53,8 +53,9 @@
                 android:drawableLeft="@android:drawable/sym_action_call"
                 android:focusable="true"
                 android:hint="Mobile Number"
-                android:textColor="#283593"
-                android:textSize="15dp" />
+                android:textSize="15dp"
+                android:gravity="center_vertical"
+                />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

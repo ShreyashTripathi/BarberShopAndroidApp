@@ -17,13 +17,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.barbershop.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,19 +43,20 @@ public class SignUpActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     ProgressBar progressBar;
     private SharedPreferences mPreferences;
-    private String sharedPrefFile = "user_name_login";
+    private String sharedPrefFile = "login";
     private FirebaseFirestore db;
     private String NAME_KEY = "name";
     private String EMAIL_KEY = "email";
     private String PASSWORD_KEY = "password";
     private String PHONE_KEY = "phone";
+    private String TAG = "Link Tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+
         inititalize();
         //setupFirestore();
 
@@ -74,6 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
         repeatPasswordRegisterEditText = findViewById(R.id.RepeatPasswordRegisterEditText);
         phoneRegisterEdiText = findViewById(R.id.PhoneRegisterEditText);
 
+        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         constraintLayoutRegister.setOnClickListener(null);
 
         db = FirebaseFirestore.getInstance();
@@ -92,8 +99,6 @@ public class SignUpActivity extends AppCompatActivity {
                 submitUser();
             }
         });
-
-
 
     }
 
@@ -147,32 +152,17 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
+        SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+        preferencesEditor.putString("login_type", "EmailSignIn");
+        preferencesEditor.apply();
 
+        addUser(name,email,password,phone);
+        signInAccountWithFirebase(getEmailCredentials(email,password));
 
-        firebaseAuth.createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                //  startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-                progressBar.setVisibility(View.GONE);
-                //Toast.makeText(SignUpActivity.this,"SIGNUP SUCCESSFUL", Toast.LENGTH_SHORT).show();
+    }
 
-
-                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                preferencesEditor.putString("UserName", name);
-                preferencesEditor.apply();
-
-                addUser(name,email,password,phone);
-                Intent intent = new Intent(SignUpActivity.this,FirstPage.class);
-                startActivity(intent);
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SignUpActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+    public AuthCredential getEmailCredentials(String email, String password) {
+        return EmailAuthProvider.getCredential(email, password);
     }
 
     private void addUser(String name,String email,String password,String phone) {
@@ -196,15 +186,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    private void setupFirestore() {
-        db = FirebaseFirestore.getInstance();
-        /*FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
 
-         */
-    }
 
     private void inputCredentialsVerification() {
 
@@ -339,4 +321,66 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
     }
+
+    // --------------------------------------- LINK,MERGE AND SIGN IN WITH CREDENTIAL START ----------------------------------------
+
+    public void linkAccountsWithCredential(final AuthCredential credential)
+    {
+        firebaseAuth.getCurrentUser().linkWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "linkWithCredential:success");
+                            FirebaseUser user = task.getResult().getUser();
+                        } else {
+                            Log.w(TAG, "linkWithCredential:failure", task.getException());
+                            Toast.makeText(SignUpActivity.this, "LinkWithCredential failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            linkAndMerge(credential);
+                        }
+
+                    }
+                });
+    }
+
+
+    public void linkAndMerge(AuthCredential credential) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser prevUser = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        FirebaseUser currentUser = task.getResult().getUser();
+                        // Merge prevUser and currentUser accounts and data
+                        // ...
+                    }
+                });
+    }
+
+    public void signInAccountWithFirebase(final AuthCredential credential)
+    {
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            linkAccountsWithCredential(credential);
+                            Intent intent = new Intent(SignUpActivity.this,FirstPage.class);
+                            startActivity(intent);
+                            progressBar.setVisibility(View.INVISIBLE);
+                        } else {
+
+                            Toast.makeText(SignUpActivity.this, "Authentication failed !!!" + task.getException(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+
+
+                    }
+                });
+    }
+
+    // --------------------------------------- LINK,MERGE AND SIGN IN WITH CREDENTIAL STOP ----------------------------------------
+
 }

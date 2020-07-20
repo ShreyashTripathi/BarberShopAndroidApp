@@ -8,24 +8,28 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
+        android:name="global_class.MyGlobalClass"
         android:allowBackup="true"
         android:icon="@mipmap/logo_barber"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo_barber"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.barbershop.ui.book_appointment.BookAppointment"/>
-        <activity android:name="com.example.barbershop.ui.barber_shop.BarberShopActivity" />
-        <activity android:name="com.example.barbershop.ForgotPassword" />
-        <activity android:name="com.example.barbershop.LocationTemp" />
-        <activity android:name="com.example.barbershop.FirstPage_2"
-            android:theme="@style/NoActionBarFragment"
-            />
-        <activity android:name="com.example.barbershop.SignUpActivity" />
-        <activity android:name="com.example.barbershop.LoginActivity" />
-        <activity android:name="com.example.barbershop.FirstPage" />
+        <activity android:name=".PhoneAuthentication"/>
+        <activity android:name=".ui.book_appointment.BookAppointment" />
+        <activity android:name=".ui.barber_shop.BarberShopActivity" />
+        <activity android:name=".ForgotPassword" />
+        <activity android:name=".LocationTemp" />
         <activity
-            android:name="com.example.barbershop.MainActivity"
+            android:name=".FirstPage_2"
+            android:theme="@style/ActionBarFragment"
+            android:configChanges="orientation|screenSize"
+            />
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".FirstPage" />
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,6 +44,25 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>

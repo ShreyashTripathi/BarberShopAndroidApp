@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,9 +14,12 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.barbershop.R;
 
+import global_class.MyGlobalClass;
+
 public class AppointmentFragment extends Fragment {
 
     private AppointmentViewModel appointmentViewModel;
+    TextView lat_tv,long_tv;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -29,6 +33,16 @@ public class AppointmentFragment extends Fragment {
                 //textView.setText(s);
             }
         });
+        lat_tv = root.findViewById(R.id.latitude_user);
+        long_tv = root.findViewById(R.id.longitude_user);
+
+        MyGlobalClass myGlobalClass = (MyGlobalClass) requireActivity().getApplicationContext();
+        double latitude = myGlobalClass.getUser_location_coordinates().first;
+        double longitude = myGlobalClass.getUser_location_coordinates().second;
+        lat_tv.setText(latitude + "");
+        long_tv.setText(longitude + "");
+
+
         return root;
     }
 }

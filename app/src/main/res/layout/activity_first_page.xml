@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/back_pic1"
     android:focusable="true"
     android:focusableInTouchMode="true"
     tools:context="com.example.barbershop.FirstPage"
@@ -12,121 +11,19 @@
     android:fitsSystemWindows="true"
     >
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        app:cardCornerRadius="20dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="10dp"
-
-        >
-        <RelativeLayout
+        android:orientation="vertical">
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginVertical="20dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="20dp"
+            android:layout_marginHorizontal="10dp"
+
             >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:textStyle="bold|italic"
-                android:hint="UserName"
-                android:layout_marginLeft="10dp"
-                android:id="@+id/first_page_heading"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/profile_pic"
-                android:src="@drawable/baseline_person_black_36"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginHorizontal="10dp"
-                />
-        </RelativeLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="15dp"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginBottom="50dp"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Services"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="10dp"
-                android:textSize="20dp"
-                />
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:id="@+id/services"
-                >
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="Men"
-                    android:layout_marginHorizontal="15dp"
-                    android:id="@+id/services_men"
-                    android:textStyle="bold|italic"
-                    />
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="Women"
-                    android:layout_marginHorizontal="15dp"
-                    android:id="@+id/services_women"
-                    android:textStyle="bold|italic"
-                    />
-            </RadioGroup>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginHorizontal="15dp"
-        app:cardCornerRadius="20dp"
-        android:layout_marginBottom="50dp"
-        >
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <VideoView
-                android:id="@+id/intro_vid"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:scrollbarStyle="insideInset"
-                android:visibility="gone"
-                />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/one"
-                android:scaleType="fitXY"
-                android:id="@+id/video_img"
-                />
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -134,60 +31,176 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="See our Salons: ------>"
-                    android:textColor="#ffffff"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginHorizontal="20dp"
-                    android:id="@+id/video_text"
+                    android:textSize="20dp"
+                    android:textStyle="bold|italic"
+                    android:hint="UserName"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/user_name_text"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/profile_pic"
+                    android:src="@drawable/user"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_centerVertical="true"
                     />
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginHorizontal="30dp"
-                    android:id="@+id/video_button"
-                    android:src="@android:drawable/ic_media_play"
-                    android:onClick="playVideo"
-                    />
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
 
-            </LinearLayout>
-
-        </FrameLayout>
-
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginHorizontal="20dp"
-        app:cardCornerRadius="20dp"
-        >
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="50dp"
             >
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="match_parent"
-                android:id="@+id/about_text"
-                android:hint="ABOUT TEXT"
-                android:layout_margin="10dp"
-                android:textStyle="italic"
-                />
-            <ImageView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/model2"
-                android:scaleType="fitXY"/>
-        </LinearLayout>
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Services"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="20dp"
+                    />
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:id="@+id/services"
+                    >
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Men"
+                        android:layout_marginHorizontal="15dp"
+                        android:id="@+id/services_men"
+                        android:textStyle="bold|italic"
+                        />
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Women"
+                        android:layout_marginHorizontal="15dp"
+                        android:id="@+id/services_women"
+                        android:textStyle="bold|italic"
+                        />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-    </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="15dp"
+            app:cardCornerRadius="20dp"
+            android:layout_marginBottom="50dp"
+            >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <VideoView
+                    android:id="@+id/intro_vid"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:scrollbarStyle="insideInset"
+                    android:visibility="gone"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
+                    />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/one"
+                    android:scaleType="fitXY"
+                    android:id="@+id/video_img"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See our Salons "
+                        android:textColor="#ffffff"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="20dp"
+                        android:id="@+id/video_text"
+                        />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="30dp"
+                        android:id="@+id/video_button"
+                        android:src="@android:drawable/ic_media_play"
+                        android:onClick="playVideo"
+                        />
+
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="20dp"
+            app:cardCornerRadius="20dp"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/about_text"
+                    android:hint="ABOUT TEXT"
+                    android:layout_margin="10dp"
+                    android:textStyle="italic"
+                    />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/model2"
+                    android:scaleType="fitXY"/>
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+
+    </LinearLayout>
 
 
 
-
-
-</LinearLayout>
+</ScrollView>

@@ -7,7 +7,6 @@
     tools:context=".ui.search.SearchFragment"
     android:orientation="vertical"
     android:paddingHorizontal="10dp"
-    android:layout_marginTop="10dp"
     android:layout_marginBottom="50dp"
     >
 

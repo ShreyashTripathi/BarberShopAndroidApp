@@ -11,23 +11,22 @@
     android:orientation="vertical"
     >
 
-
-    <ProgressBar
-        android:id="@+id/progressBarLogin"
-        android:indeterminate="true"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:visibility="invisible"
-        />
+        android:layout_height="150dp"
+        android:layout_marginBottom="32dp"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/layout_shape"
+        >
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
         style="@style/TextAppearance.MaterialComponents.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         android:text="Welcome to LehBarber"
         android:textColor="#ffffff"
         android:textSize="30dp"
@@ -41,12 +40,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="15dp"
         android:text="Sign In to connect with us"
         android:textSize="20dp"
         android:textColor="#ffffff"
         />
 
+        <ProgressBar
+            android:id="@+id/progressBarLogin"
+            android:indeterminate="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            />
+
+    </LinearLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -108,7 +117,6 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword" />
 
-
     </com.google.android.material.textfield.TextInputLayout>
     <TextView
         android:id="@+id/forgotPaswword"
@@ -139,16 +147,33 @@
         app:shapeAppearance="@style/Widget.MaterialComponents.Button.OutlinedButton"
         />
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/google"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:padding="10dp"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="20dp"
+            >
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/googleg_standard_color_18"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/google_sign_in_button"
+                />
 
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@android:drawable/ic_dialog_email"
+                android:id="@+id/otp_sign_in_button"
+                android:layout_alignParentEnd="true"
+                />
+
+
+        </RelativeLayout>
 
 
     <TextView

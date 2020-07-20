@@ -3,18 +3,18 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#0080FF</item>
-        <item name="colorPrimaryDark">#FFFFFF</item>
+        <item name="colorPrimaryDark">#0080FF</item>
         <item name="colorAccent">#0080FF</item>
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="NoActionBarFragment" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="ActionBarFragment" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">#0080FF</item>
-        <item name="colorPrimaryDark">#FFFFFF</item>
+        <item name="colorPrimaryDark">#0080FF</item>
         <item name="colorAccent">#0080FF</item>
         <item name="android:fitsSystemWindows">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
     </style>
 
     <style name="Widget.MaterialComponents.TextInputLayout.FilledBox" parent="Base.Widget.MaterialComponents.TextInputLayout">
@@ -79,10 +79,9 @@
         <item name="android:textColor">@color/errorStrong</item>
     </style>
 
-    <style name="roundedImageView">roundedImageView
+    <style name="roundedImageView">
         <item name="cornerFamily">rounded</item>
-        <item name="android:topRightRadius">20dp</item>
-        <item name="android:bottomRightRadius">20dp</item>
+        <item name="android:radius">20dp</item>
     </style>
 
 
