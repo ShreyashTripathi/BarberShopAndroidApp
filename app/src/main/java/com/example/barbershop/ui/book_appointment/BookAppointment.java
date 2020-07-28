@@ -1,6 +1,7 @@
 package com.example.barbershop.ui.book_appointment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,18 +22,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.barbershop.R;
 import com.example.barbershop.adapters.HairStylistAdapter;
+import com.example.barbershop.models.BookingData;
 import com.example.barbershop.models.HairStylist;
+import com.example.barbershop.models.User;
+import com.example.barbershop.ui.barber_shop.BarberShopActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class BookAppointment extends AppCompatActivity {
 
-    CalendarView cv;
-    Calendar calendar;
-    TextView shop_name_tv,service_booked_tv;
-    RecyclerView available_barber_rv;
-    BookAppointmentViewModel viewModel;
+    private CalendarView cv;
+    private TextView shop_name_tv,service_booked_tv;
+    private RecyclerView available_barber_rv;
+    private BookAppointmentViewModel viewModel;
+    private BookingData bookingData;
+    private String shop_document_id;
+    private String shop_name,hairStylistName, emailOrPhone;
 
     LinearLayout available_timings;
     private String TAG = "BookAppointment";
@@ -44,7 +50,7 @@ public class BookAppointment extends AppCompatActivity {
         initialize();
 
         viewModel = new ViewModelProvider(this).get(BookAppointmentViewModel.class);
-        calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         cv.setDate(calendar.getTimeInMillis(),true,true);
 
         Calendar temp = Calendar.getInstance();
@@ -59,11 +65,15 @@ public class BookAppointment extends AppCompatActivity {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Toast.makeText(BookAppointment.this, "Selected date: " + dayOfMonth + " : " + month + " : " + year, Toast.LENGTH_SHORT).show();
+                String date = dayOfMonth + " / " + month + " / " + year;
+                setDateData(date);
             }
+
         });
 
         Intent intent = getIntent();
-        String shop_name = intent.getStringExtra("shop_name");
+        shop_name = intent.getStringExtra("shop_name");
+        shop_document_id = intent.getStringExtra("shop_document_id");
         shop_name_tv.setText(shop_name);
 
         String service_booked = intent.getStringExtra("service_booked");
@@ -73,7 +83,14 @@ public class BookAppointment extends AppCompatActivity {
         available_barbers.observe(BookAppointment.this, new Observer<ArrayList<HairStylist>>() {
             @Override
             public void onChanged(ArrayList<HairStylist> hairStylists) {
-                available_barber_rv.setAdapter(new HairStylistAdapter(hairStylists,BookAppointment.this));
+                HairStylistAdapter hairStylistAdapter = new HairStylistAdapter(hairStylists, BookAppointment.this, new HairStylistAdapter.OnGetHairStylist() {
+                    @Override
+                    public void getHairStylist(HairStylist hairStylist) {
+                        setHairStylistData(hairStylist);
+                    }
+                });
+                available_barber_rv.setAdapter(hairStylistAdapter);
+
                 Log.println(Log.INFO,TAG,"HairStylist for a shop set!");
             }
         });
@@ -81,7 +98,7 @@ public class BookAppointment extends AppCompatActivity {
 
         ArrayList<String> available_slots = viewModel.getAvailableTimings();
 
-        for(String timing : available_slots)
+        for(final String timing : available_slots)
         {
             LayoutInflater vi = LayoutInflater.from(BookAppointment.this);
             View v = vi.inflate(R.layout.time_slots_card, null,false);
@@ -95,12 +112,55 @@ public class BookAppointment extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(BookAppointment.this, "Time Chosen!", Toast.LENGTH_SHORT).show();
+                    setTimeData(timing);
                 }
             });
 
             available_timings.addView(v);
         }
 
+        String sharedPrefFile = "login";
+        SharedPreferences mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        String login_type = mPreferences.getString("login_type", "LoggedOut");
+        String user_email = mPreferences.getString("user_email","");
+        String user_phone = mPreferences.getString("user_phone","");
+
+
+        if(login_type.equals("OTP"))
+        {
+            emailOrPhone = user_phone;
+        }
+        else
+        {
+            emailOrPhone = user_email;
+        }
+        MutableLiveData<User> userData =  viewModel.getUserData(emailOrPhone);
+        userData.observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                setUserData(user);
+            }
+        });
+
+    }
+
+    private void setUserData(User user) {
+        bookingData.setUser_name(user.getName());
+        bookingData.setUser_phone(user.getPhone());
+        bookingData.setUser_img(user.getUser_profile_pic());
+    }
+
+    private void setHairStylistData(HairStylist hairStylist) {
+        bookingData.setHairstylist_id(hairStylist.getName()+"_"+hairStylist.getShop_name());
+        hairStylistName = hairStylist.getName();
+    }
+
+    private void setTimeData(String timing) {
+        bookingData.setTimeSlot(timing);
+    }
+
+    private void setDateData(String date) {
+        bookingData.setDate(date);
     }
 
     private void initialize() {
@@ -111,10 +171,19 @@ public class BookAppointment extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(BookAppointment.this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         available_barber_rv.setLayoutManager(llm);
+        bookingData = new BookingData();
 
         available_timings = findViewById(R.id.available_slots);
     }
 
+
     public void bookAppointment(View view) {
+        Toast.makeText(this, "Appointment Booked!", Toast.LENGTH_SHORT).show();
+        viewModel.setBookingData(bookingData,shop_document_id,shop_name,hairStylistName,emailOrPhone);
+        Intent intent = new Intent(BookAppointment.this, BarberShopActivity.class);
+        intent.putExtra("shop_name",shop_name);
+        startActivity(intent);
+        finish();
+        //finishActivity(R.string.BOOK_APPOINTMENT);
     }
 }

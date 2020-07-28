@@ -1,19 +1,38 @@
 package com.example.barbershop.models;
 
-public class User {
-    String name;
-    String email;
-    String password;
-    String phone;
+import java.util.ArrayList;
 
-    public User(String name, String email, String password, String phone) {
+public class User {
+    private String name;
+    private String email;
+    private String password;
+    private String phone;
+    private ArrayList<String> fav_shops;
+    private String loginType;
+    private String user_profile_pic;
+    private ArrayList<AppointmentData> appointmentData;
+
+    public User() {
+    }
+
+    public User(String name, String email, String password, String phone, ArrayList<String> fav_shops,String loginType) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.fav_shops = fav_shops;
+        this.loginType = loginType;
     }
 
-
+    public User(String name, String email, String password, String phone, ArrayList<String> fav_shops, String loginType, String user_profile_pic) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.fav_shops = fav_shops;
+        this.loginType = loginType;
+        this.user_profile_pic = user_profile_pic;
+    }
 
     public String getName() {
         return name;
@@ -45,5 +64,37 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(String loginType) {
+        this.loginType = loginType;
+    }
+
+    public String getUser_profile_pic() {
+        return user_profile_pic;
+    }
+
+    public void setUser_profile_pic(String user_profile_pic) {
+        this.user_profile_pic = user_profile_pic;
+    }
+
+    public ArrayList<String> getFav_shops() {
+        return fav_shops;
+    }
+
+    public void setFav_shops(ArrayList<String> fav_shops) {
+        this.fav_shops = fav_shops;
+    }
+
+    public ArrayList<AppointmentData> getAppointmentData() {
+        return appointmentData;
+    }
+
+    public void setAppointmentData(ArrayList<AppointmentData> appointmentData) {
+        this.appointmentData = appointmentData;
     }
 }

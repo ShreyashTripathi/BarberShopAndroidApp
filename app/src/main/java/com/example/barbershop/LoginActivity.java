@@ -1,5 +1,6 @@
 package com.example.barbershop;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.barbershop.models.User;
+import com.example.barbershop.ui.FirstPage.FirstPage;
 import com.facebook.CallbackManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,17 +30,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -62,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     private String sharedPrefFile = "login";
     private String TAG = "Link Tag";
     private String _email_user;
+    private LinearLayout linearLayout;
 
 
     @Override
@@ -81,8 +87,8 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarLogin);
         signUp = findViewById(R.id.SignUp);
         loginButton = findViewById(R.id.login);
+        linearLayout = findViewById(R.id.login_activity_layout);
         firebaseAuth = FirebaseAuth.getInstance();
-
         g_sign_in = findViewById(R.id.google_sign_in_button);
         otp_sign_in =findViewById(R.id.otp_sign_in_button);
 
@@ -139,15 +145,17 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void makeToast(String message, Context context)
+    {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
     //-------------------------------------------- FIREBASE LOGIN START ---------------------------------------------
-
-
-
     private void loginForm() {
         usernameLayout.setErrorEnabled(false);
         passwordInputLayout.setErrorEnabled(false);
-        String userName = userNameEditText.getText().toString().trim();
-        String passWord = passwordEditText.getText().toString().trim();
+        final String userName = userNameEditText.getText().toString().trim();
+        final String passWord = passwordEditText.getText().toString().trim();
 
         progressBar.setVisibility(View.VISIBLE);
         if(userName.equals("")){
@@ -175,12 +183,75 @@ public class LoginActivity extends AppCompatActivity {
             passwordInputLayout.setError("Password length should be atleast 6");
         }
 
-        SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-        preferencesEditor.putString("login_type", "EmailSignIn");
-        preferencesEditor.apply();
 
-        signInAccountWithFirebase(getEmailCredentials(userName,passWord));
+        checkAccountExistAlready(userName, new OnCheckAccountExists() {
+            @Override
+            public void checkAccountExists(boolean accountExists,String loginType) {
+                if (accountExists && loginType.equals("EmailPassword")) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    getFirestoreUser(userName, new OnGetFirestoreUser() {
+                        @Override
+                        public void getFirestoreUser(User user) {
 
+                        }
+                    });
+                    SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                    preferencesEditor.putString("login_type", "EmailSignIn");
+                    preferencesEditor.putString("user_email",userName);
+                    preferencesEditor.apply();
+                    makeToast("First",LoginActivity.this);
+
+                    signInAccountWithFirebase(getEmailCredentials(userName,passWord));
+                }
+                else if(accountExists) {
+                    Snackbar.make(linearLayout, "User already signed in using " + loginType, Snackbar.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    makeToast("Second",LoginActivity.this);
+                }
+                else
+                {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Snackbar.make(linearLayout, "Invalid Login Credentials", Snackbar.LENGTH_LONG).show();
+                    makeToast("Third",LoginActivity.this);
+                }
+            }
+        });
+
+    }
+
+
+
+    private void getFirestoreUser(final String email, final OnGetFirestoreUser onGetFirestoreUser) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection(USER_COLLECTION_PATH);
+        users.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful())
+                {
+                    boolean flag = false;
+                    for(QueryDocumentSnapshot snapshot : task.getResult())
+                    {
+                        User user = snapshot.toObject(User.class);
+                        if(user.getEmail().equals(email))
+                        {
+                            flag = true;
+                            onGetFirestoreUser.getFirestoreUser(user);
+                            break;
+                        }
+                    }
+                    if(!flag)
+                    {
+                        onGetFirestoreUser.getFirestoreUser(null);
+                    }
+                }
+            }
+        });
+
+    }
+
+    private interface OnGetFirestoreUser{
+        void getFirestoreUser(User user);
     }
 
     private void inputTextValidation() {
@@ -279,17 +350,42 @@ public class LoginActivity extends AppCompatActivity {
 
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
+                final GoogleSignInAccount account = task.getResult(ApiException.class);
 
                 Log.println(Log.DEBUG,TAG,"Google SignIn");
 
-                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                preferencesEditor.putString("login_type", "GoogleSignIn");
-                preferencesEditor.apply();
 
-                if(account != null)
-                    signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()));
+                if(account != null) {
 
+                    checkAccountExistAlready(account.getEmail(), new OnCheckAccountExists() {
+                        @Override
+                        public void checkAccountExists(boolean accountExists,String loginType) {
+                            if (accountExists && loginType.equals("Google")) {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()));
+                                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                                preferencesEditor.putString("login_type", "GoogleSignIn");
+                                preferencesEditor.putString("user_email",account.getEmail());
+                                preferencesEditor.apply();
+                            }
+                            else if(accountExists) {
+                                Snackbar.make(linearLayout, "User already signed in using " + loginType, Snackbar.LENGTH_LONG).show();
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }else
+                            {
+                                User user = new User(account.getDisplayName(),account.getEmail(),"","",null,"Google");
+                                if(account.getPhotoUrl() != null)
+                                    user.setUser_profile_pic(account.getPhotoUrl().toString());
+                                addAccountToFirestore(user);
+                                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                                preferencesEditor.putString("login_type", "GoogleSignIn");
+                                preferencesEditor.putString("user_email",account.getEmail());
+                                preferencesEditor.apply();
+                                signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()));
+                            }
+                        }
+                    });
+                }
 
             } catch (ApiException e) {
                 Toast.makeText(this,"Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -298,6 +394,43 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void addAccountToFirestore(User user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection(USER_COLLECTION_PATH);
+        Log.println(Log.INFO,"addUser","add User function running....");
+        users.document(user.getEmail()).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    Log.println(Log.INFO,"addUser","User added....");
+                    Toast.makeText(LoginActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Log.println(Log.INFO,"addUser","Error: " + task.getException());
+                }
+            }
+        });
+        /*users.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Log.println(Log.INFO,"addUser","User added....");
+                Toast.makeText(LoginActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
+                Log.println(Log.INFO,"addUser","Error: " + e);
+            }
+        });*/
+
+    }
+
+
+
+
     public AuthCredential getGoogleCredentials(String googleIdToken) {
         return GoogleAuthProvider.getCredential(googleIdToken, null);
     }
@@ -305,7 +438,7 @@ public class LoginActivity extends AppCompatActivity {
     // --------------------------------------- GOOGLE SIGN IN END -----------------------------------------
 
 
-    // --------------------------------------- LINK,MERGE AND SIGN IN WITH CREDENTIAL START ----------------------------------------
+    // ---------------------------------------  SIGN IN WITH CREDENTIAL START ----------------------------------------
 
     public void signInAccountWithFirebase(final AuthCredential credential)
     {
@@ -314,14 +447,13 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
-                            Intent intent = new Intent(LoginActivity.this,FirstPage.class);
-                            startActivity(intent);
                             progressBar.setVisibility(View.INVISIBLE);
-                        } else if (!task.isSuccessful() && task.getException() instanceof FirebaseAuthUserCollisionException){
+                            Intent intent = new Intent(LoginActivity.this, FirstPage.class);
+                            startActivity(intent);
+                        } else{
 
                             //handleUserCollisionException();
-                            Toast.makeText(LoginActivity.this, "User Collision Exception", Toast.LENGTH_SHORT).show();
+                            Log.println(Log.ERROR,TAG,"error:438: " + task.getException());
                         }
 
 
@@ -329,67 +461,41 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void handleUserCollisionException() {
-
-                firebaseAuth.fetchSignInMethodsForEmail(_email_user)
-                        .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                                if (task.isSuccessful()) {
-                                    if (task.getResult().getSignInMethods().contains(GoogleAuthProvider.PROVIDER_ID)) {
-                                        // Password account already exists with the same email.
-                                        // Ask user to provide password associated with that account.
-
-                                        // Sign in with email and the provided password.
-                                        // If this was a Google account, call signInWithCredential instead.
-
-                                    }
-                                }
-                            }
-                        });
-    }
-
-
-    public void linkAccountsWithCredential(final AuthCredential credential)
-    {
-        firebaseAuth.getCurrentUser().linkWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "linkWithCredential:success");
-                            FirebaseUser user = task.getResult().getUser();
-                        } else {
-                            Log.w(TAG, "linkWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed !! " + task.getException(),
-                                    Toast.LENGTH_SHORT).show();
-                            linkAndMerge(credential);
+    private void checkAccountExistAlready(final String email, final OnCheckAccountExists onCheckAccountExists) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection(USER_COLLECTION_PATH);
+        users.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful())
+                {
+                    boolean flag = false;
+                    for(QueryDocumentSnapshot snapshot : task.getResult())
+                    {
+                        User user = snapshot.toObject(User.class);
+                        if(user.getEmail().equals(email))
+                        {
+                            flag = true;
+                            onCheckAccountExists.checkAccountExists(true,user.getLoginType());
+                            break;
                         }
-
                     }
-                });
-    }
-
-
-    public void linkAndMerge(AuthCredential credential) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-
-        FirebaseUser prevUser = FirebaseAuth.getInstance().getCurrentUser();
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        FirebaseUser currentUser = task.getResult().getUser();
-                        // Merge prevUser and currentUser accounts and data
-                        // ...
+                    if(!flag)
+                    {
+                        onCheckAccountExists.checkAccountExists(false,"");
                     }
-                });
+                }
+            }
+        });
 
     }
 
+    private interface OnCheckAccountExists{
+        void checkAccountExists(boolean accountExists,String loginType);
+    }
 
-    // --------------------------------------- LINK,MERGE AND SIGN IN WITH CREDENTIAL STOP ----------------------------------------
+
+    // ---------------------------------------  SIGN IN WITH CREDENTIAL STOP ----------------------------------------
 
 
     // -------------------------------------- FORGOT PASSWORD START --------------------------------------------

@@ -15,6 +15,7 @@ public class Shops{
     private int waiting_list;
     private String type;
     private String shop_img;
+    private ArrayList<BookingData> bookingDataList;
 
     public Shops(String shopName, String location, double latitude, double longitude, String about, float ratings, ArrayList<BarberService> services, String phone, int waiting_list, String type, String shop_img) {
         this.shopName = shopName;
@@ -119,5 +120,13 @@ public class Shops{
 
     public void setShop_img(String shop_img) {
         this.shop_img = shop_img;
+    }
+
+    public ArrayList<BookingData> getBookingDataList() {
+        return bookingDataList;
+    }
+
+    public void setBookingDataList(ArrayList<BookingData> bookingDataList) {
+        this.bookingDataList = bookingDataList;
     }
 }

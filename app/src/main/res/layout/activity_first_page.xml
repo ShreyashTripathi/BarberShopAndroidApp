@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.example.barbershop.FirstPage"
+    tools:context="com.example.barbershop.ui.FirstPage.FirstPage"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     >
@@ -31,14 +31,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:textStyle="bold|italic"
                     android:hint="UserName"
                     android:layout_marginLeft="10dp"
                     android:id="@+id/user_name_text"
                     android:layout_centerVertical="true"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true" />
+                    android:layout_alignParentLeft="true"
+                    android:fontFamily="@font/ubuntu_light"
+                    />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="50dp"
@@ -72,8 +74,9 @@
                     android:layout_height="match_parent"
                     android:text="Services"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:textSize="20dp"
+                    android:layout_marginStart="10dp"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/ubuntu_light"
                     />
                 <RadioGroup
                     android:layout_width="wrap_content"
@@ -88,6 +91,7 @@
                         android:layout_marginHorizontal="15dp"
                         android:id="@+id/services_men"
                         android:textStyle="bold|italic"
+                        android:fontFamily="@font/ubuntu_light"
                         />
                     <RadioButton
                         android:layout_width="wrap_content"
@@ -96,6 +100,7 @@
                         android:layout_marginHorizontal="15dp"
                         android:id="@+id/services_women"
                         android:textStyle="bold|italic"
+                        android:fontFamily="@font/ubuntu_light"
                         />
                 </RadioGroup>
             </LinearLayout>
@@ -103,63 +108,27 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginHorizontal="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             app:cardCornerRadius="20dp"
-            android:layout_marginBottom="50dp"
-            >
-
-            <FrameLayout
+            android:layout_marginHorizontal="10dp">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <VideoView
-                    android:id="@+id/intro_vid"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:scrollbarStyle="insideInset"
-                    android:visibility="gone"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
+                    android:layout_height="wrap_content"
+                    android:text="Watch our Salons"
+                    android:fontFamily="@font/ubuntu_light"
+                    android:layout_margin="10dp"
+                    android:textSize="20sp"
                     />
-
-                <ImageView
+                <com.google.android.youtube.player.YouTubePlayerView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/one"
-                    android:scaleType="fitXY"
-                    android:id="@+id/video_img"
-                    />
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    >
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="See our Salons "
-                        android:textColor="#ffffff"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="20dp"
-                        android:id="@+id/video_text"
-                        />
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="30dp"
-                        android:id="@+id/video_button"
-                        android:src="@android:drawable/ic_media_play"
-                        android:onClick="playVideo"
-                        />
-
-
-                </LinearLayout>
-
-            </FrameLayout>
-
-
+                    android:layout_height="wrap_content"
+                    android:id="@+id/youtube_player"/>
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -179,6 +148,7 @@
                     android:id="@+id/about_text"
                     android:hint="ABOUT TEXT"
                     android:layout_margin="10dp"
+                    android:fontFamily="@font/ubuntu_light"
                     android:textStyle="italic"
                     />
                 <ImageView
@@ -199,8 +169,9 @@
             android:layout_marginBottom="10dp" />
 
 
-    </LinearLayout>
 
+
+    </LinearLayout>
 
 
 </ScrollView>

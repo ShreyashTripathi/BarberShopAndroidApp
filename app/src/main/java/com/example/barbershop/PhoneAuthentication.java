@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.barbershop.models.User;
+import com.example.barbershop.ui.FirstPage.FirstPage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
@@ -25,8 +27,15 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import global_class.MyGlobalClass;
 
 public class PhoneAuthentication extends AppCompatActivity implements View.OnClickListener {
 
@@ -40,6 +49,8 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
     private static final int STATE_VERIFY_SUCCESS = 4;
     private static final int STATE_SIGNIN_FAILED = 5;
     private static final int STATE_SIGNIN_SUCCESS = 6;
+    private static final String USER_COLLECTION_PATH = "Users";
+    private FirebaseFirestore db;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -55,6 +66,8 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
     private ProgressBar progressBar;
     private String sharedPrefFile = "login";
     private SharedPreferences mPreferences;
+    private String phone_number;
+    private MyGlobalClass myGlobalClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,21 +90,27 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
                 Log.d(TAG, "onVerificationCompleted:" + credential);
-                // [START_EXCLUDE silent]
                 mVerificationInProgress = false;
-                // [END_EXCLUDE]
-
-                // [START_EXCLUDE silent]
-                // Update the UI and attempt sign in with the phone credential
                 updateUI(STATE_VERIFY_SUCCESS, credential);
-                // [END_EXCLUDE]
+
+                checkAccountExistAlready(phone_number, new OnCheckAccountExists() {
+                    @Override
+                    public void checkAccountExists(boolean accountExists, User user) {
+                        if(accountExists)
+                        {
+                            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                            preferencesEditor.putString("user_email", user.getEmail());
+                            preferencesEditor.apply();
+                        }
+                        else {
+                            addUser(phone_number);
+                            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                            preferencesEditor.putString("user_phone", phone_number);
+                            preferencesEditor.apply();
+                        }
+                    }
+                });
                 signInWithPhoneAuthCredential(credential);
             }
 
@@ -154,6 +173,8 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
 
         mAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBarOtpAuth);
+        db = FirebaseFirestore.getInstance();
+        myGlobalClass = (MyGlobalClass)getApplicationContext();
 
     }
 
@@ -184,9 +205,76 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
         mVerificationInProgress = savedInstanceState.getBoolean(KEY_VERIFY_IN_PROGRESS);
     }
 
+    private void addUser(String phone) {
+        User user = new User("","","",phone,null,"OTP");
+        CollectionReference users = db.collection(USER_COLLECTION_PATH);
+
+        Log.println(Log.INFO,"addUser","add User function running....");
+        users.document(phone).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    Log.println(Log.INFO,"addUser","User added....");
+                    Toast.makeText(PhoneAuthentication.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Log.println(Log.INFO,"addUser","Error: " + task.getException());
+                }
+            }
+        });
+        /*users.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Log.println(Log.INFO,"addUser","User added....");
+                Toast.makeText(PhoneAuthentication.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
+                Log.println(Log.INFO,"addUser","Error: " + e);
+            }
+        });*/
+    }
+
+    private void checkAccountExistAlready(final String phone, final OnCheckAccountExists onCheckAccountExists) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference users = db.collection(USER_COLLECTION_PATH);
+        users.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful())
+                {
+                    boolean flag = false;
+                    for(QueryDocumentSnapshot snapshot : Objects.requireNonNull(task.getResult()))
+                    {
+                        User user = snapshot.toObject(User.class);
+                        if(user.getPhone().equals(phone))
+                        {
+                            flag = true;
+                            onCheckAccountExists.checkAccountExists(true,user);
+                            break;
+                        }
+                    }
+                    if(!flag)
+                    {
+                        onCheckAccountExists.checkAccountExists(false,null);
+                    }
+                }
+            }
+        });
+
+    }
+
+    private interface OnCheckAccountExists{
+        void checkAccountExists(boolean accountExists,User user);
+    }
+
 
     private void startPhoneNumberVerification(String phoneNumber) {
         // [START start_phone_auth]
+        progressBar.setVisibility(View.VISIBLE);
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 "+91" + phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration
@@ -227,11 +315,8 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
                             FirebaseUser user = task.getResult().getUser();
-                            // [START_EXCLUDE]
                             updateUI(STATE_SIGNIN_SUCCESS, user);
-                            // [END_EXCLUDE]
                         } else {
                             // Sign in failed, display a message and update the UI
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -378,8 +463,11 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
                 if (!validatePhoneNumber()) {
                     return;
                 }
-
-                startPhoneNumberVerification(fieldPhoneNumber.getText().toString());
+                if(fieldPhoneNumber.getText() != null)
+                {
+                    phone_number = fieldPhoneNumber.getText().toString();
+                    startPhoneNumberVerification(fieldPhoneNumber.getText().toString());
+                }
                 break;
             case R.id.verify_otp_for_auth:
                 String code = fieldVerificationCode.getText().toString();

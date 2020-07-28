@@ -8,11 +8,8 @@ import com.example.barbershop.models.BarberService;
 import com.example.barbershop.models.HairStylist;
 import com.example.barbershop.models.Shops;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -125,7 +122,22 @@ public class MySetterClass {
                     }
                     if(!flag)
                     {
-                        shops.add(shop).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        shops.document(shop.getShopName()+"_"+shop.getPhone()).set(shop)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            Log.println(Log.INFO,TAG,"Shop Data added....");
+                                        }
+                                        else
+                                        {
+                                            Log.println(Log.ERROR,TAG,"Error: " + task.getException());
+                                        }
+                                    }
+                                });
+
+                        /*shops.add(shop).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Log.println(Log.INFO,TAG,"Shop Data added....");
@@ -137,7 +149,7 @@ public class MySetterClass {
                                 //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
                                 Log.println(Log.ERROR,TAG,"Error: " + e);
                             }
-                        });
+                        });*/
                     }
 
                 }
@@ -202,7 +214,22 @@ public class MySetterClass {
                     }
                     if(!flag)
                     {
-                        hairStylists.add(hairStylist).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        hairStylists.document(hairStylist.getName()+"_"+hairStylist.getShop_name())
+                                .set(hairStylist)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            Log.println(Log.INFO,TAG,"HairStylist Data added....");
+                                        }
+                                        else
+                                        {
+                                            Log.println(Log.ERROR,TAG,"Error: " + task.getException());
+                                        }
+                                    }
+                                });
+                       /* hairStylists.add(hairStylist).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Log.println(Log.INFO,TAG,"HairStylist Data added....");
@@ -214,7 +241,7 @@ public class MySetterClass {
                                 //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
                                 Log.println(Log.ERROR,TAG,"Error: " + e);
                             }
-                        });
+                        });*/
                     }
 
                 }

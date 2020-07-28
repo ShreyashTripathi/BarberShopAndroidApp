@@ -14,7 +14,9 @@
         android:paddingVertical="5dp"
         app:cardElevation="20dp"
         android:layout_marginBottom="20dp"
-        >
+        android:id="@+id/hair_stylist_card"
+        android:clickable="true"
+        android:focusable="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

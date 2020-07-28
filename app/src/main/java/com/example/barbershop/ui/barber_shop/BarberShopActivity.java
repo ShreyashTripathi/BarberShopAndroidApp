@@ -1,6 +1,7 @@
 package com.example.barbershop.ui.barber_shop;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -46,6 +47,7 @@ public class BarberShopActivity extends AppCompatActivity {
     private Pair<Double,Double> loc_coordinates;
     private String shop_name_for_map_label;
     private LinearLayout insertPoint;
+    private SharedPreferences mPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +55,15 @@ public class BarberShopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_barber_shop);
         shopViewModel = new ViewModelProvider(this).get(ShopViewModel.class);
         initialize();
+        String sharedPrefFile = "login";
+         mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+
         Intent intent = getIntent();
-        String shop_name_text = intent.getStringExtra("shop_name");
+        final String shop_name_text = intent.getStringExtra("shop_name");
         shopData = shopViewModel.getShopData(shop_name_text);
         shopData.observe(BarberShopActivity.this, new Observer<Shops>() {
             @Override
-            public void onChanged(Shops shop) {
+            public void onChanged(final Shops shop) {
                 Picasso.with(BarberShopActivity.this).load(shop.getShop_img()).into(shop_img);
                 shop_name.setText(shop.getShopName());
                 shop_name_for_map_label = shop.getShopName();
@@ -93,7 +98,8 @@ public class BarberShopActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             Toast.makeText(BarberShopActivity.this, "Book Service!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(BarberShopActivity.this, BookAppointment.class);
-                            intent.putExtra("shop_name",shop_name.getText().toString());
+                            intent.putExtra("shop_name",shop.getShopName());
+                            intent.putExtra("shop_document_id",shop.getShopName()+"_"+shop.getPhone());
                             intent.putExtra("service_booked",_service.getService_name());
                             startActivity(intent);
 
@@ -102,19 +108,40 @@ public class BarberShopActivity extends AppCompatActivity {
 
                     insertPoint.addView(v);
                 }
+                setShopData(shop);
             }
         });
 
 
+        //String login_type = mPreferences.getString("login_type", "LoggedOut");
 
+
+    }
+
+    private void setShopData(Shops shop) {
+        String user_email_from_pref = mPreferences.getString("user_email", "");
+        String user_phone = mPreferences.getString("user_phone", "");
+        final String emailOrPhone;
+        if(!user_email_from_pref.equals(""))
+        {
+            emailOrPhone = user_email_from_pref;
+        }
+        else
+        {
+            emailOrPhone = user_phone;
+        }
+
+        final String shopDocumentID = shop.getShopName()+"_"+shop.getPhone();
         favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(favButton.isChecked())
                 {
+                    shopViewModel.setShopAsFavourite(shopDocumentID,emailOrPhone);
                     Toast.makeText(BarberShopActivity.this, "Shop added to Favorite!", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    shopViewModel.removeShopFromFavourite(shopDocumentID,emailOrPhone);
                     Toast.makeText(BarberShopActivity.this, "Shop removed from Favorite!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -155,7 +182,6 @@ public class BarberShopActivity extends AppCompatActivity {
             String knownName = addresses.get(0).getFeatureName();
 
             address_ = String.format("%s,%s", address.split(",", 0)[1], address.split(",", 0)[2]);
-
         }
         return address_;
     }

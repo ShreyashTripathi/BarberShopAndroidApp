@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.barbershop.ui.FirstPage.FirstPage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -479,7 +480,7 @@ public class ForgotPassword extends AppCompatActivity implements View.OnClickLis
                 preferencesEditor.putString("login_type", "FirebaseSignIn");
                 preferencesEditor.apply();
 
-                startActivity(new Intent(ForgotPassword.this,FirstPage.class));
+                startActivity(new Intent(ForgotPassword.this, FirstPage.class));
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

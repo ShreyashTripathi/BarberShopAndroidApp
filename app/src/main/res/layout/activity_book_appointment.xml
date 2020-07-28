@@ -17,7 +17,7 @@
         >
         <CalendarView
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="wrap_content"
             android:id="@+id/book_appointment_calender"
             />
     </com.google.android.material.card.MaterialCardView>
@@ -103,12 +103,12 @@
                 android:layout_marginBottom="20dp"
                 />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Book Appointment"
+                    android:text="Book Appointment"
                     android:width="250dp"
-                    android:id="@+id/call_button"
+                    android:id="@+id/book_appointment_button"
                     android:onClick="bookAppointment"
                     android:layout_gravity="center"
                     />

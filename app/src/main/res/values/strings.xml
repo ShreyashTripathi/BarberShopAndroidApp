@@ -8,6 +8,14 @@
     <string name="vertical_button">B\no\no\nk\n\nN\no\nw</string>
     <string name="facebook_app_id">675241969985775</string>
     <string name="fb_login_protocol_scheme">fb675241969985775</string>
+    <string name="youtube_api_key">AIzaSyD0S1PlcFxOd19pDkkzCv1hA-Hrr5QI5hM</string>
     <string name="about_text">Good population in human society is the basic principle for peace,\n prosperity and spiritual progress in life. The varriisrama religion\'s principles were so designed that the good population would prevail in society.</string>
+    <string name="HelloUser">Hello User</string>
+    <string name="no_address_found">No Address Found</string>
+    <string name="invalid_lat_long_used">Invalid Latitude , Longitude used</string>
+    <string name="service_not_available">Service not available</string>
+    <string name="location_loading_text">Getting Location, Please wait!</string>
+    <string name="location_permission_denied">Location Permission Denied</string>
+    <string name="BOOK_APPOINTMENT">1</string>
 
 </resources>
