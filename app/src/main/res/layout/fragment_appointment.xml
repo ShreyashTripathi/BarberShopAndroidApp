@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    >
+    android:layout_marginBottom="50dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -16,10 +16,13 @@
         android:textStyle="bold"
         android:fontFamily="@font/aldrich"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_height="wrap_content"
         android:id="@+id/appointment_list_rv"
         android:layout_marginHorizontal="10dp"
         />
@@ -27,12 +30,14 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="50dp"
+        app:fabCustomSize="65dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="30dp"
         android:src="@drawable/ic_baseline_add_24"
         android:id="@+id/add_appointment_button"
         />
 
+    </FrameLayout>
 
 </LinearLayout>

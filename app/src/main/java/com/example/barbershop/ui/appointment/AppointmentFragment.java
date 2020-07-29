@@ -34,12 +34,12 @@ public class AppointmentFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         appointmentViewModel = new ViewModelProvider(this).get(AppointmentViewModel.class);
         root = inflater.inflate(R.layout.fragment_appointment, container, false);
-        initializeUI();
+        //initializeUI();
         String sharedPrefFile = "login";
         SharedPreferences mPreferences = requireActivity().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         String email = mPreferences.getString("user_email","");
         String phone = mPreferences.getString("user_phone","");
-        String emailOrPhone;
+        final String emailOrPhone;
         if(!email.equals(""))
         {
             emailOrPhone = email;
@@ -57,17 +57,20 @@ public class AppointmentFragment extends Fragment {
         appointmentData.observe(requireActivity(), new Observer<ArrayList<AppointmentData>>() {
             @Override
             public void onChanged(ArrayList<AppointmentData> appointmentData) {
-                appointment_rv.setAdapter(new AppointmentAdapter(requireActivity(),appointmentData));
+                AppointmentAdapter adapter = new AppointmentAdapter(requireActivity(), appointmentData, new AppointmentAdapter.SetIsBookingCancelled() {
+                    @Override
+                    public void isBookingCancelled(boolean bookingStatus,AppointmentData appointmentData) {
+                        if(bookingStatus)          //is cancelled
+                            appointmentViewModel.setAppointmentStatus(appointmentData,emailOrPhone, false);
+                    }
+                });
+                appointment_rv.setAdapter(adapter);
             }
         });
-
 
 
         return root;
     }
 
-    private void initializeUI() {
 
-
-    }
 }

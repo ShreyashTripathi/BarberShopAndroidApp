@@ -8,6 +8,7 @@
     style="@style/AppTheme"
     android:orientation="vertical"
     android:padding="5dp"
+    android:id="@+id/book_appointment_layout"
     >
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

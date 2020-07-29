@@ -25,10 +25,13 @@ import com.example.barbershop.adapters.HairStylistAdapter;
 import com.example.barbershop.models.BookingData;
 import com.example.barbershop.models.HairStylist;
 import com.example.barbershop.models.User;
-import com.example.barbershop.ui.barber_shop.BarberShopActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class BookAppointment extends AppCompatActivity {
 
@@ -52,6 +55,7 @@ public class BookAppointment extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(BookAppointmentViewModel.class);
         Calendar calendar = Calendar.getInstance();
         cv.setDate(calendar.getTimeInMillis(),true,true);
+        setDateData(getDateFromMilliSec(calendar.getTimeInMillis()));
 
         Calendar temp = Calendar.getInstance();
         temp.add(Calendar.DATE,7);
@@ -60,6 +64,7 @@ public class BookAppointment extends AppCompatActivity {
         Calendar temp2 = Calendar.getInstance();
         temp.add(Calendar.DATE,-7);
         cv.setMinDate(temp2.getTimeInMillis());
+
 
         cv.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -144,6 +149,12 @@ public class BookAppointment extends AppCompatActivity {
 
     }
 
+    private String getDateFromMilliSec(long timeInMillis) {
+        DateFormat simple = new SimpleDateFormat("dd / mm / yyyy", Locale.US);
+        Date result = new Date(timeInMillis);
+        return simple.format(result);
+    }
+
     private void setUserData(User user) {
         bookingData.setUser_name(user.getName());
         bookingData.setUser_phone(user.getPhone());
@@ -180,9 +191,17 @@ public class BookAppointment extends AppCompatActivity {
     public void bookAppointment(View view) {
         Toast.makeText(this, "Appointment Booked!", Toast.LENGTH_SHORT).show();
         viewModel.setBookingData(bookingData,shop_document_id,shop_name,hairStylistName,emailOrPhone);
-        Intent intent = new Intent(BookAppointment.this, BarberShopActivity.class);
+        /*Intent intent = new Intent(BookAppointment.this, BarberShopActivity.class);
         intent.putExtra("shop_name",shop_name);
         startActivity(intent);
+        */
+        //Fragment fragment_appointment = getSupportFragmentManager().findFragmentById(R.id.navigation_notifications);
+        /*Fragment fragment_appointment = new Fragment(AppointmentFragment.class);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if(fragment_appointment!=null)
+            transaction.replace(R.id.book_appointment_layout, fragment_appointment).commit();
+        else
+            Log.println(Log.ERROR,TAG,"Fragment is null!");*/
         finish();
         //finishActivity(R.string.BOOK_APPOINTMENT);
     }
