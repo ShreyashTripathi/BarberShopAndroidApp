@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.barbershop.models.HairStylist;
+import com.example.barbershop.models.Worker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,6 +20,7 @@ import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import global_class.MyGlobalClass;
 
@@ -27,14 +28,14 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData< ArrayList<HairStylist> > hair_stylists_list;
+    private MutableLiveData< ArrayList<Worker> > workers_list;
     private MutableLiveData< ArrayList<StorageReference> > advertisement_list;
     private MutableLiveData<String> user_location;
     private final String TAG = "home_view_model";
 
     public HomeViewModel() {
         Log.println(Log.INFO,TAG,"Home View Model Running!");
-        hair_stylists_list = new MutableLiveData<>();
+        workers_list = new MutableLiveData<>();
         advertisement_list = new MutableLiveData<>();
         user_location = new MutableLiveData<>();
         setAdvertisementList();
@@ -69,26 +70,26 @@ public class HomeViewModel extends ViewModel {
 
 
 
-    public MutableLiveData<ArrayList<HairStylist>> getHairStylistsList()
+    public MutableLiveData<ArrayList<Worker>> getWorkersList()
     {
         final MyGlobalClass myGlobalClass = (MyGlobalClass) getApplicationContext();
         final String gender_ = myGlobalClass.getGender();
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        String HAIR_STYLISTS_COLLECTION_PATH = "HairStylists";
-        final CollectionReference hairStylists = firestore.collection(HAIR_STYLISTS_COLLECTION_PATH);
+        String WORKERS_COLLECTION_PATH = "Workers";
+        final CollectionReference hairStylists = firestore.collection(WORKERS_COLLECTION_PATH);
         hairStylists.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    //ArrayList<HairStylist> hairStylistArrayList = new ArrayList<>(task.getResult().toObjects(HairStylist.class));
-                    ArrayList<HairStylist> hairStylistArrayList = new ArrayList<>();
-                    for(DocumentSnapshot snapshot : task.getResult())
+                    //ArrayList<Worker> workerArrayList = new ArrayList<>(task.getResult().toObjects(Worker.class));
+                    ArrayList<Worker> workerArrayList = new ArrayList<>();
+                    for(DocumentSnapshot snapshot : Objects.requireNonNull(task.getResult()))
                     {
-                        HairStylist hairStylist = snapshot.toObject(HairStylist.class);
-                        if(hairStylist!=null && (hairStylist.getShop_type().equals(gender_+" Salon") || hairStylist.getShop_type().equals("Unisex Salon")))
-                            hairStylistArrayList.add(hairStylist);
+                        Worker worker = snapshot.toObject(Worker.class);
+                        if(worker !=null && (worker.getShop_type().equals(gender_+" Salon") || worker.getShop_type().equals("Unisex Salon")))
+                            workerArrayList.add(worker);
                     }
-                    hair_stylists_list.setValue(hairStylistArrayList);
+                    workers_list.setValue(workerArrayList);
                 }
                 else
                 {
@@ -97,7 +98,7 @@ public class HomeViewModel extends ViewModel {
             }
         });
 
-        return hair_stylists_list;
+        return workers_list;
     }
 
     public MutableLiveData<ArrayList<StorageReference>> getAdvertisementList()

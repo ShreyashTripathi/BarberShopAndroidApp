@@ -1,29 +1,57 @@
 package com.example.barbershop.models;
 
 public class AppointmentData {
-    private String shopName;
+    private String shopId;
+    private String userId;
+    private String service_opted;
+    private String workerId;
     private String date;
     private String timeSlot;
-    private String hairstylistName;
-    private boolean active;
+    private boolean active_status = true;
 
     public AppointmentData() {
     }
 
-    public AppointmentData(String shopName, String date, String timeSlot, String hairstylistName, boolean active) {
-        this.shopName = shopName;
+    public AppointmentData(String shopId, String userId, String service_opted, String workerId, String date, String timeSlot, boolean active_status) {
+        this.shopId = shopId;
+        this.userId = userId;
+        this.service_opted = service_opted;
+        this.workerId = workerId;
         this.date = date;
         this.timeSlot = timeSlot;
-        this.hairstylistName = hairstylistName;
-        this.active = active;
+        this.active_status = active_status;
     }
 
-    public String getShopName() {
-        return shopName;
+    public String getShopId() {
+        return shopId;
     }
 
-    public void setShopName(String shopName) {
-        this.shopName = shopName;
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getService_opted() {
+        return service_opted;
+    }
+
+    public void setService_opted(String service_opted) {
+        this.service_opted = service_opted;
+    }
+
+    public String getWorkerId() {
+        return workerId;
+    }
+
+    public void setWorkerId(String workerId) {
+        this.workerId = workerId;
     }
 
     public String getDate() {
@@ -42,19 +70,24 @@ public class AppointmentData {
         this.timeSlot = timeSlot;
     }
 
-    public String getHairstylistName() {
-        return hairstylistName;
+    public boolean isActive_status() {
+        return active_status;
     }
 
-    public void setHairstylistName(String hairstylistName) {
-        this.hairstylistName = hairstylistName;
+    public void setActive_status(boolean active_status) {
+        this.active_status = active_status;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
+    @Override
+    public String toString() {
+        return "AppointmentData{" +
+                "shopId='" + shopId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", service_opted='" + service_opted + '\'' +
+                ", workerId='" + workerId + '\'' +
+                ", date='" + date + '\'' +
+                ", timeSlot='" + timeSlot + '\'' +
+                ", active_status=" + active_status +
+                '}';
     }
 }

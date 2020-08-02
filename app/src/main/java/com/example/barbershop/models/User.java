@@ -10,7 +10,6 @@ public class User {
     private ArrayList<String> fav_shops;
     private String loginType;
     private String user_profile_pic;
-    private ArrayList<AppointmentData> appointmentData;
 
     public User() {
     }
@@ -90,11 +89,4 @@ public class User {
         this.fav_shops = fav_shops;
     }
 
-    public ArrayList<AppointmentData> getAppointmentData() {
-        return appointmentData;
-    }
-
-    public void setAppointmentData(ArrayList<AppointmentData> appointmentData) {
-        this.appointmentData = appointmentData;
-    }
 }

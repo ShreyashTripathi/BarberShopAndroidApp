@@ -15,27 +15,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.barbershop.R;
-import com.example.barbershop.models.HairStylist;
+import com.example.barbershop.models.Worker;
 import com.google.android.material.card.MaterialCardView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class HairStylistAdapter extends RecyclerView.Adapter<HairStylistAdapter.HairStylistViewHolder> {
+public class WorkerAdapter extends RecyclerView.Adapter<WorkerAdapter.HairStylistViewHolder> {
 
-    ArrayList<HairStylist> hairStylists;
+    ArrayList<Worker> workers;
     Context context;
     OnGetHairStylist onGetHairStylist;
 
-    public HairStylistAdapter(ArrayList<HairStylist> hairStylists, Context context,OnGetHairStylist onGetHairStylist) {
-        this.hairStylists = hairStylists;
+    public WorkerAdapter(ArrayList<Worker> workers, Context context, OnGetHairStylist onGetHairStylist) {
+        this.workers = workers;
         this.context = context;
         this.onGetHairStylist = onGetHairStylist;
     }
 
     @NonNull
     @Override
-    public HairStylistAdapter.HairStylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public WorkerAdapter.HairStylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.h_s_card,null,false);
         view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT));
@@ -43,38 +43,38 @@ public class HairStylistAdapter extends RecyclerView.Adapter<HairStylistAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HairStylistAdapter.HairStylistViewHolder holder, int position) {
-        final HairStylist hairStylist = hairStylists.get(position);
-        //holder.h_s_img.setImageResource(hairStylist.getProfile_pic());
-        Picasso.with(context).load(hairStylist.getProfile_pic_url()).into(holder.h_s_img);
-        holder.phone_no.setText(hairStylist.getPhone_no());
+    public void onBindViewHolder(@NonNull WorkerAdapter.HairStylistViewHolder holder, int position) {
+        final Worker worker = workers.get(position);
+        //holder.h_s_img.setImageResource(worker.getProfile_pic());
+        Picasso.with(context).load(worker.getProfile_pic_url()).into(holder.h_s_img);
+        holder.phone_no.setText(worker.getPhone_no());
         holder.phone_no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String phone = hairStylist.getPhone_no();
+                String phone = worker.getPhone_no();
                 Intent call_intent = new Intent(Intent.ACTION_DIAL);
                 call_intent.setData(Uri.parse("tel:" + phone));
                 context.startActivity(call_intent);
             }
         });
-        holder.name.setText(hairStylist.getName());
-        holder.ratingBar.setRating(hairStylist.getRating());
+        holder.name.setText(worker.getName());
+        holder.ratingBar.setRating(worker.getRating());
         holder.h_s_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onGetHairStylist.getHairStylist(hairStylist);
-                Toast.makeText(context, "Hairstylist "+hairStylist.getName()+" chosen!", Toast.LENGTH_SHORT).show();
+                onGetHairStylist.getHairStylist(worker);
+                Toast.makeText(context, "Worker: "+ worker.getName()+" chosen!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public interface OnGetHairStylist{
-        void getHairStylist(HairStylist hairStylist);
+        void getHairStylist(Worker worker);
     }
 
     @Override
     public int getItemCount() {
-        return hairStylists.size();
+        return workers.size();
     }
 
     public static class HairStylistViewHolder extends RecyclerView.ViewHolder{

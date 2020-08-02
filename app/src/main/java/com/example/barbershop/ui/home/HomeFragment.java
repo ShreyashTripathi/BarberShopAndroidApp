@@ -23,10 +23,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.barbershop.R;
-import com.example.barbershop.adapters.HairStylistAdapter;
+import com.example.barbershop.adapters.WorkerAdapter;
 import com.example.barbershop.adapters.SalonAdAdapter;
 import com.example.barbershop.location.FetchAddressTask;
-import com.example.barbershop.models.HairStylist;
+import com.example.barbershop.models.Worker;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -139,17 +139,17 @@ public class HomeFragment extends Fragment implements
         salon_ad_rv.setLayoutManager(llm2);
 
 
-        final LiveData<ArrayList<HairStylist>> hairStylists = homeViewModel.getHairStylistsList();
-        hairStylists.observe(requireActivity(), new Observer<ArrayList<HairStylist>>() {
+        final LiveData<ArrayList<Worker>> hairStylists = homeViewModel.getWorkersList();
+        hairStylists.observe(requireActivity(), new Observer<ArrayList<Worker>>() {
             @Override
-            public void onChanged(ArrayList<HairStylist> hairStylists) {
-                h_s_rv.setAdapter(new HairStylistAdapter(hairStylists, context, new HairStylistAdapter.OnGetHairStylist() {
+            public void onChanged(ArrayList<Worker> workers) {
+                h_s_rv.setAdapter(new WorkerAdapter(workers, context, new WorkerAdapter.OnGetHairStylist() {
                     @Override
-                    public void getHairStylist(HairStylist hairStylist) {
+                    public void getHairStylist(Worker worker) {
 
                     }
                 }));
-                Log.println(Log.INFO,TAG,"HairStylist adapter set!");
+                Log.println(Log.INFO,TAG,"Worker adapter set!");
             }
         });
 

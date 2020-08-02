@@ -42,16 +42,17 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
     @Override
     public void onBindViewHolder(@NonNull final AppointmentViewHolder holder, final int position) {
         final AppointmentData ad = appointmentDataArrayList.get(position);
-        holder.shop_name.setText(ad.getShopName());
+        holder.shop_name.setText(ad.getShopId());
+        holder.service.setText(ad.getService_opted());
         holder.date.setText(ad.getDate());
         holder.time_slot.setText(ad.getTimeSlot());
-        holder.hairstylist_name.setText(String.format("Hairstylist Chosen: %s", ad.getHairstylistName()));
-        holder.active_status_switch.setChecked(ad.isActive());
-        if(!ad.isActive())
+        holder.worker_name.setText(String.format("Worker Chosen: %s", ad.getWorkerId()));
+        holder.active_status_switch.setChecked(ad.isActive_status());
+        if(!ad.isActive_status())
             holder.active_status_switch.setClickable(false);
         else
             holder.active_status_switch.setClickable(true);
-        if(ad.isActive()) {
+        if(ad.isActive_status()) {
             holder.active_status_switch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -72,7 +73,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                         button.setChecked(false);
                         button.setClickable(false);
                         setIsBookingCancelledGlobalStatus(true, ad);
-                        appointmentDataArrayList.get(position).setActive(false);
+                        appointmentDataArrayList.get(position).setActive_status(false);
                         notifyItemChanged(position);
                     }
                 })
@@ -82,7 +83,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                         button.setChecked(true);
                         button.setClickable(true);
                         setIsBookingCancelledGlobalStatus(false,ad);
-                        appointmentDataArrayList.get(position).setActive(true);
+                        appointmentDataArrayList.get(position).setActive_status(true);
                         notifyItemChanged(position);
                     }
                 });
@@ -106,7 +107,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
     }
 
     public static class AppointmentViewHolder extends RecyclerView.ViewHolder {
-        TextView shop_name,date,time_slot,hairstylist_name;
+        TextView shop_name,date,time_slot,worker_name,service;
         Switch active_status_switch;
         
         public AppointmentViewHolder(@NonNull View itemView) {
@@ -114,8 +115,9 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             shop_name = itemView.findViewById(R.id.shop_name_avc);
             date = itemView.findViewById(R.id.appt_date_avc);
             time_slot = itemView.findViewById(R.id.appt_time_avc);
-            hairstylist_name = itemView.findViewById(R.id.hs_name_avc);
+            worker_name = itemView.findViewById(R.id.worker_name_avc);
             active_status_switch = itemView.findViewById(R.id.appt_active_avc);
+            service = itemView.findViewById(R.id.service_opted_avc);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.example.barbershop.models;
 
-public class HairStylist {
+public class Worker {
     private String profile_pic_url;
     private float rating;
     private String phone_no;
@@ -9,10 +9,10 @@ public class HairStylist {
     private String gender;
     private String shop_type;
 
-    public HairStylist() {
+    public Worker() {
     }
 
-    public HairStylist(String profile_pic_url, float rating, String phone_no, String name, String shop_name, String gender, String shop_type) {
+    public Worker(String profile_pic_url, float rating, String phone_no, String name, String shop_name, String gender, String shop_type) {
         this.profile_pic_url = profile_pic_url;
         this.rating = rating;
         this.phone_no = phone_no;

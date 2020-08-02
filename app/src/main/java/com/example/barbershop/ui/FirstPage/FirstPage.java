@@ -149,7 +149,7 @@ public class FirstPage extends YouTubeBaseActivity implements YouTubePlayer.OnIn
         youTubePlayerView = findViewById(R.id.youtube_player);
 
         MySetterClass.setShopData();
-        //MySetterClass.setHairStylistData();
+        MySetterClass.setWorkerData();
     }
 
 

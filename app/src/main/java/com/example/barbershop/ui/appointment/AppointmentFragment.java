@@ -2,6 +2,7 @@ package com.example.barbershop.ui.appointment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AppointmentFragment extends Fragment {
 
+    private static final String TAG = "appt fragment";
     private AppointmentViewModel appointmentViewModel;
     private RecyclerView appointment_rv;
     private FloatingActionButton addAppointment;
@@ -60,6 +62,7 @@ public class AppointmentFragment extends Fragment {
                 AppointmentAdapter adapter = new AppointmentAdapter(requireActivity(), appointmentData, new AppointmentAdapter.SetIsBookingCancelled() {
                     @Override
                     public void isBookingCancelled(boolean bookingStatus,AppointmentData appointmentData) {
+                        Log.println(Log.INFO,TAG,"appointment data: " + appointmentData.getService_opted() + " : " + bookingStatus);
                         if(bookingStatus)          //is cancelled
                             appointmentViewModel.setAppointmentStatus(appointmentData,emailOrPhone, false);
                     }

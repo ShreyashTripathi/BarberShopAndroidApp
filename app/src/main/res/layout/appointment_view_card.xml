@@ -22,6 +22,16 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="Service Opted"
+                android:textSize="20sp"
+                android:fontFamily="@font/ubuntu_light"
+                android:layout_margin="5dp"
+                android:id="@+id/service_opted_avc"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:hint="Shop Name"
                 android:textSize="20sp"
                 android:fontFamily="@font/ubuntu_light"
@@ -53,7 +63,7 @@
                 android:textSize="20sp"
                 android:fontFamily="@font/ubuntu_light"
                 android:layout_margin="5dp"
-                android:id="@+id/hs_name_avc"
+                android:id="@+id/worker_name_avc"
                 />
             <LinearLayout
                 android:layout_width="match_parent"

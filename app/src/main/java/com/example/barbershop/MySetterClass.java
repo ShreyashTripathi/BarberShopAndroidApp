@@ -5,8 +5,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.barbershop.models.BarberService;
-import com.example.barbershop.models.HairStylist;
 import com.example.barbershop.models.Shops;
+import com.example.barbershop.models.Worker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -160,44 +160,44 @@ public class MySetterClass {
         });
     }
 
-    public static void setHairStylistData()
+    public static void setWorkerData()
     {
-        HairStylist hairStylist1 = new HairStylist(MALE_STYLIST_URL,2.5f,"+917905334848","Eminem","DIVINE Shop Model","Male", "Male Salon");
-        addHairStylists(hairStylist1);
+        Worker worker1 = new Worker(MALE_STYLIST_URL,2.5f,"+917905334848","Eminem","DIVINE Shop Model","Male", "Male Salon");
+        addWorker(worker1);
 
-        HairStylist hairStylist2 = new HairStylist(MALE_STYLIST_URL,2.5f,"+917905334848","DIVINE","Eminem Shop Model","Male", "Male Salon");
-        addHairStylists(hairStylist2);
+        Worker worker2 = new Worker(MALE_STYLIST_URL,2.5f,"+917905334848","DIVINE","Eminem Shop Model","Male", "Male Salon");
+        addWorker(worker2);
 
-        HairStylist hairStylist3 = new HairStylist(MALE_STYLIST_URL,2.5f,"+917905334848","Bazzi","Bazzi Shop Model","Male", "Male Salon");
-        addHairStylists(hairStylist3);
+        Worker worker3 = new Worker(MALE_STYLIST_URL,2.5f,"+917905334848","Bazzi","Bazzi Shop Model","Male", "Male Salon");
+        addWorker(worker3);
 
-        HairStylist hairStylist4 = new HairStylist(FEMALE_STYLIST_URL,2.5f,"+917905334848","Camila","SelenaGomez Shop Model","Female", "Female Salon");
-        addHairStylists(hairStylist4);
+        Worker worker4 = new Worker(FEMALE_STYLIST_URL,2.5f,"+917905334848","Camila","SelenaGomez Shop Model","Female", "Female Salon");
+        addWorker(worker4);
 
-        HairStylist hairStylist5 = new HairStylist(FEMALE_STYLIST_URL,2.5f,"+917905334848","Selena Gomez","Camila Barber Shop","Female", "Female Salon");
-        addHairStylists(hairStylist5);
+        Worker worker5 = new Worker(FEMALE_STYLIST_URL,2.5f,"+917905334848","Selena Gomez","Camila Barber Shop","Female", "Female Salon");
+        addWorker(worker5);
 
-        HairStylist hairStylist6 = new HairStylist(FEMALE_STYLIST_URL,2.5f,"+917905334848","Katy Perry","KatyPerry Shop Model","Female", "Female Salon");
-        addHairStylists(hairStylist6);
+        Worker worker6 = new Worker(FEMALE_STYLIST_URL,2.5f,"+917905334848","Katy Perry","KatyPerry Shop Model","Female", "Female Salon");
+        addWorker(worker6);
 
-        HairStylist hairStylist7 = new HairStylist(MALE_STYLIST_URL,2.5f,"+917905334848","BTS","Justin Shop Model","Male", "Unisex Salon");
-        addHairStylists(hairStylist7);
+        Worker worker7 = new Worker(MALE_STYLIST_URL,2.5f,"+917905334848","BTS","Justin Shop Model","Male", "Unisex Salon");
+        addWorker(worker7);
 
-        HairStylist hairStylist8 = new HairStylist(FEMALE_STYLIST_URL,2.5f,"+917905334848","Justin","BTS Shop Model","Female", "Unisex Salon");
-        addHairStylists(hairStylist8);
+        Worker worker8 = new Worker(FEMALE_STYLIST_URL,2.5f,"+917905334848","Justin","BTS Shop Model","Female", "Unisex Salon");
+        addWorker(worker8);
 
     }
 
-    public static void addHairStylists(final HairStylist hairStylist)
+    public static void addWorker(final Worker worker)
     {
         FirebaseFirestore db  = FirebaseFirestore.getInstance();
-        String HAIR_STYLISTS_COLLECTION_PATH = "HairStylists";
-        final CollectionReference hairStylists = db.collection(HAIR_STYLISTS_COLLECTION_PATH);
-        Log.println(Log.INFO,TAG,"addHairStylists function running....");
-        final String HAIR_STYLIST_NAME_FIELD = "name";
-        final String HAIR_STYLIST_SHOP_FIELD  = "shop_name";
+        String WORKERS_COLLECTION_PATH = "Workers";
+        final CollectionReference workers = db.collection(WORKERS_COLLECTION_PATH);
+        Log.println(Log.INFO,TAG,"addWorkers function running....");
+        final String WORKER_NAME_FIELD = "name";
+        final String WORKER_SHOP_FIELD  = "shop_name";
 
-        hairStylists.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        workers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful())
@@ -205,23 +205,23 @@ public class MySetterClass {
                     boolean flag = false;
                     for(DocumentSnapshot snapshot :task.getResult().getDocuments())
                     {
-                        if(snapshot.get(HAIR_STYLIST_NAME_FIELD).equals(hairStylist.getName()) &&  snapshot.get(HAIR_STYLIST_SHOP_FIELD).equals(hairStylist.getShop_name()))
+                        if(snapshot.get(WORKER_NAME_FIELD).equals(worker.getName()) &&  snapshot.get(WORKER_SHOP_FIELD).equals(worker.getShop_name()))
                         {
-                            Log.println(Log.INFO,TAG,"HairStylist of same name already exists in same shop!");
+                            Log.println(Log.INFO,TAG,"Worker of same name already exists in same shop!");
                             flag = true;
                             break;
                         }
                     }
                     if(!flag)
                     {
-                        hairStylists.document(hairStylist.getName()+"_"+hairStylist.getShop_name())
-                                .set(hairStylist)
+                        workers.document(worker.getName()+"_"+ worker.getShop_name())
+                                .set(worker)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful())
                                         {
-                                            Log.println(Log.INFO,TAG,"HairStylist Data added....");
+                                            Log.println(Log.INFO,TAG,"Worker Data added....");
                                         }
                                         else
                                         {
@@ -229,19 +229,7 @@ public class MySetterClass {
                                         }
                                     }
                                 });
-                       /* hairStylists.add(hairStylist).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.println(Log.INFO,TAG,"HairStylist Data added....");
 
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
-                                Log.println(Log.ERROR,TAG,"Error: " + e);
-                            }
-                        });*/
                     }
 
                 }
