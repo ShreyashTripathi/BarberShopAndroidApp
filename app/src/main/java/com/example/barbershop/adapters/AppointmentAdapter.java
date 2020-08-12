@@ -42,11 +42,16 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
     @Override
     public void onBindViewHolder(@NonNull final AppointmentViewHolder holder, final int position) {
         final AppointmentData ad = appointmentDataArrayList.get(position);
-        holder.shop_name.setText(ad.getShopId());
+        String shop_name_text = "Shop Not Selected!",worker_name_text = "Worker not selected";
+        if(ad.getShopId()!=null)
+            shop_name_text = ad.getShopId().split("_", 0)[0];
+        holder.shop_name.setText(shop_name_text);
         holder.service.setText(ad.getService_opted());
         holder.date.setText(ad.getDate());
         holder.time_slot.setText(ad.getTimeSlot());
-        holder.worker_name.setText(String.format("Worker Chosen: %s", ad.getWorkerId()));
+        if(ad.getWorkerId() != null)
+            worker_name_text = ad.getWorkerId().split("_",0)[0];
+        holder.worker_name.setText(String.format("Worker Chosen: %s", worker_name_text));
         holder.active_status_switch.setChecked(ad.isActive_status());
         if(!ad.isActive_status())
             holder.active_status_switch.setClickable(false);

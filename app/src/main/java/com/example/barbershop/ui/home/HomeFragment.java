@@ -269,10 +269,11 @@ public class HomeFragment extends Fragment implements
     public void onTaskCompleted(String result) {
         if (mTrackingLocation && isAdded()) {
             // Update the UI
-            street_name.setText(result);
+            String resAddress = String.format("%s,%s", result.split(",", 0)[1], result.split(",", 0)[2]);
+            street_name.setText(resAddress);
             progressBar.setVisibility(View.INVISIBLE);
             MyGlobalClass myGlobalClass = (MyGlobalClass)getApplicationContext();
-            myGlobalClass.setUser_loc_string(result);
+            myGlobalClass.setUser_loc_string(resAddress);
         }
     }
 

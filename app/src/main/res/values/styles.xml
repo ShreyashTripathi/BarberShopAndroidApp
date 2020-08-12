@@ -78,6 +78,10 @@
     <style name="errorAppearanceStrong" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/errorStrong</item>
     </style>
+    <style name="helperTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/seaGreenColor</item>
+    </style>
+
 
     <style name="roundedImageView">
         <item name="cornerFamily">rounded</item>

@@ -106,6 +106,7 @@ public class FirstPage extends YouTubeBaseActivity implements YouTubePlayer.OnIn
     protected void onResume() {
         super.onResume();
         checkCurrentUser();
+        setUserNameAndPic();
         //fbLoginButtonManager();
 
     }
@@ -159,7 +160,31 @@ public class FirstPage extends YouTubeBaseActivity implements YouTubePlayer.OnIn
         SharedPreferences mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         String user_email = mPreferences.getString("user_email","");
         String user_phone = mPreferences.getString("user_phone","");
-        if(user_email.equals(""))         //New OTP User
+        String emailOrPhone;
+        if(!user_email.equals(""))
+        {
+            emailOrPhone = user_email;
+        }
+        else {
+            emailOrPhone = user_phone;
+        }
+
+        getUserData(emailOrPhone, new OnGetUserData() {
+            @Override
+            public void getUserData(User user) {
+                if(!user.getName().equals(""))
+                    user_name_tv.setText(String.format("Hello %s",user.getName()));
+                else
+                    user_name_tv.setText(String.format("Hello User %s",user.getPhone()));
+
+                if(user.getUser_profile_pic()!=null)
+                    Picasso.with(FirstPage.this).load(user.getUser_profile_pic()).into(profile_pic);
+                else
+                    Picasso.with(FirstPage.this).load(R.drawable.user).into(profile_pic);
+            }
+        });
+
+        /*if(user_email.equals(""))         //New OTP User
         {
             user_name_tv.setText(String.format("Hello User %s", user_phone));
             Picasso.with(FirstPage.this).load(R.drawable.user).into(profile_pic);
@@ -179,7 +204,7 @@ public class FirstPage extends YouTubeBaseActivity implements YouTubePlayer.OnIn
                     Picasso.with(FirstPage.this).load(pic_url).into(profile_pic);
                 }
             });
-        }
+        }*/
 
     }
 
@@ -222,6 +247,41 @@ public class FirstPage extends YouTubeBaseActivity implements YouTubePlayer.OnIn
     // -------------------------- YOUTUBE Settings END ---------------------------
 
     // -------------------------- Get User Profile Start -------------------------
+
+    public void getUserData(final String user_doc_id, final OnGetUserData onGetUserData) {
+
+        firestore.collection(USER_COLLECTION_PATH)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful())
+                        {
+                            for(QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+                            {
+                                if(document.getId().equals(user_doc_id))
+                                {
+                                    User user = document.toObject(User.class);
+                                    onGetUserData.getUserData(user);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Log.println(Log.ERROR,TAG,""+task.getException());
+                        }
+                    }
+                });
+    }
+
+
+
+    abstract static class OnGetUserData{
+        public abstract void getUserData(User user);
+    }
+
+    //____________________________________________________________________________________
 
     public void getUser_name(final String email, final OnGetUserName onGetUserName) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();

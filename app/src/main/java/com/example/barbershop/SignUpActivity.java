@@ -177,15 +177,16 @@ public class SignUpActivity extends AppCompatActivity {
                 }else if(password.length()<6){
                     passwordRegisterLayout.setErrorTextAppearance(R.style.errorAppearanceWeak);
                     passwordRegisterLayout.setErrorEnabled(true);
-                    passwordRegisterLayout.setError("Password length should be atleast 6");
-                }else if(password.length()<=12 && password.length()>=6){
+                    passwordRegisterLayout.setError("Password length should be at least 6");
+                }else if(password.length() <= 12){
                     passwordRegisterLayout.setErrorTextAppearance(R.style.errorAppearanceGood);
                     passwordRegisterLayout.setErrorEnabled(true);
                     passwordRegisterLayout.setError("Good Password strength");
-                }else if(password.length()>12){
-                    passwordRegisterLayout.setErrorTextAppearance(R.style.errorAppearanceStrong);
-                    passwordRegisterLayout.setErrorEnabled(true);
-                    passwordRegisterLayout.setError("String Password Strength");
+                }else {
+                    passwordRegisterLayout.setHelperTextTextAppearance(R.style.helperTextAppearance);
+                    passwordRegisterLayout.setHelperTextEnabled(true);
+                    passwordRegisterLayout.setHelperText("Strong Password Strength");
+
                 }
             }
 
@@ -217,10 +218,10 @@ public class SignUpActivity extends AppCompatActivity {
                 String password = passwordRegisterEditText.getText().toString().trim();
                 if(TextUtils.isEmpty(repeatPassword)){
                     repeatPasswordRegisterLayout.setErrorEnabled(true);
-                    repeatPasswordRegisterLayout.setError("Please enter the Password to Verify");
+                    repeatPasswordRegisterLayout.setError("Please enter the password to Verify");
                 }else if(!repeatPassword.equals(password)){
                     repeatPasswordRegisterLayout.setErrorEnabled(true);
-                    repeatPasswordRegisterLayout.setError("Password did not Matched");
+                    repeatPasswordRegisterLayout.setError("Password did not matched");
                 }
                 else{
                     repeatPasswordRegisterLayout.setErrorEnabled(false);

@@ -22,6 +22,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
+import global_class.MyGlobalClass;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class AppointmentFragment extends Fragment {
@@ -30,12 +32,11 @@ public class AppointmentFragment extends Fragment {
     private AppointmentViewModel appointmentViewModel;
     private RecyclerView appointment_rv;
     private FloatingActionButton addAppointment;
-    private View root;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         appointmentViewModel = new ViewModelProvider(this).get(AppointmentViewModel.class);
-        root = inflater.inflate(R.layout.fragment_appointment, container, false);
+        View root = inflater.inflate(R.layout.fragment_appointment, container, false);
         //initializeUI();
         String sharedPrefFile = "login";
         SharedPreferences mPreferences = requireActivity().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
@@ -55,7 +56,9 @@ public class AppointmentFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         appointment_rv.setLayoutManager(llm);
 
-        MutableLiveData <ArrayList<AppointmentData>> appointmentData = appointmentViewModel.getAppointmentData(emailOrPhone);
+        MyGlobalClass myGlobalClass = (MyGlobalClass)requireActivity().getApplicationContext();
+        String gender = myGlobalClass.getGender();
+        MutableLiveData <ArrayList<AppointmentData>> appointmentData = appointmentViewModel.getAppointmentData(emailOrPhone,gender);
         appointmentData.observe(requireActivity(), new Observer<ArrayList<AppointmentData>>() {
             @Override
             public void onChanged(ArrayList<AppointmentData> appointmentData) {

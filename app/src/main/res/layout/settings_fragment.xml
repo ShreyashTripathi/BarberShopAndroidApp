@@ -14,19 +14,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:orientation="vertical"
+            android:background="@drawable/layout_shape">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/layout_shape"
             android:paddingHorizontal="10dp"
+            android:layout_marginTop="30dp"
             >
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/model2"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:id="@+id/profile_pic_setting"
                 android:layout_centerVertical="true"
                 android:background="@drawable/round_img_shape"
@@ -36,22 +41,39 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name of the person"
+                android:hint="Name of the person"
                 android:textSize="20sp"
-                android:layout_toRightOf="@id/profile_pic_setting"
+                android:layout_toEndOf="@id/profile_pic_setting"
                 android:layout_marginHorizontal="10dp"
                 android:layout_centerVertical="true"
                 android:id="@+id/profile_name_setting"
+                android:textColor="#ffffff"
                 />
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/heart_filled_3"
-                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_outline_create_24"
+                android:layout_toEndOf="@id/profile_name_setting"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/profile_name_setting"
+                android:layout_alignParentEnd="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/drop_down_icon_setting"
                 />
         </RelativeLayout>
+            <ProgressBar
+                android:id="@+id/progressBarSetting"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                />
+        </LinearLayout>
+
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,6 +90,7 @@
             android:id="@+id/log_out"
             android:layout_marginTop="50dp"
             />
+
 
     </LinearLayout>
 

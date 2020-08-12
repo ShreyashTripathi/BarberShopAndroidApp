@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.barbershop.models.AppointmentData;
+import com.example.barbershop.models.Shops;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -33,15 +34,15 @@ public class AppointmentViewModel extends ViewModel {
     }
 
 
-    public MutableLiveData<ArrayList<AppointmentData>> getAppointmentData(final String user_doc_id) {
+    public MutableLiveData<ArrayList<AppointmentData>> getAppointmentData(final String user_doc_id, final String gender) {
         firestore.collection(APPOINTMENT_COLLECTION_PATH).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful())
                         {
-                            ArrayList<AppointmentData> appointmentDataArrayList = new ArrayList<>();
-                            for(AppointmentData ad: Objects.requireNonNull(task.getResult()).toObjects(AppointmentData.class))
+                            final ArrayList<AppointmentData> appointmentDataArrayList = new ArrayList<>();
+                            for(final AppointmentData ad: Objects.requireNonNull(task.getResult()).toObjects(AppointmentData.class))
                             {
                                 if(ad.getUserId().equals(user_doc_id))
                                 {
@@ -58,51 +59,7 @@ public class AppointmentViewModel extends ViewModel {
         return appointmentData;
     }
 
-
-
-
-    /*public void removeBookingData(final BookingData bookingData, String shop_document_id, final String shop_name, final String hairStylistName, final String emailOrPhone) {
-
-
-        firestore.collection(SHOP_COLLECTION_PATH).document(shop_document_id)
-                .update("bookingDataList", FieldValue.arrayRemove(bookingData))
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                        {
-                            Log.println(Log.INFO,TAG,"Booking Data is removed from the shop's data");
-                            AppointmentData appointmentData = new AppointmentData(shop_name,bookingData.getDate(),bookingData.getTimeSlot(),hairStylistName,true);
-                            //removeAppointmentData(appointmentData,emailOrPhone);
-                        }
-                        else
-                        {
-                            Log.println(Log.ERROR,TAG,task.getException()+"");
-                        }
-                    }
-                });
-
-    }
-
-    public void removeAppointmentData(AppointmentData appointmentData, final String emailOrPhone)
-    {
-
-        firestore.collection(USER_COLLECTION_PATH).document(emailOrPhone)
-                .update("appointmentData",FieldValue.arrayRemove(appointmentData))
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                        {
-                            Log.println(Log.INFO,TAG,"Appointment Data set for: " + emailOrPhone);
-                        }
-                        else {
-                            Log.println(Log.ERROR,TAG,task.getException()+"");
-                        }
-                    }
-                });
-    }*/
-
+   
     public void setAppointmentStatus(final AppointmentData appointmentData, final String user_doc_id, final boolean status) {
         Log.println(Log.INFO,"app view TAG","set app function");
         firestore.collection(APPOINTMENT_COLLECTION_PATH).get()
