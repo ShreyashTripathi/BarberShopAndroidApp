@@ -8,6 +8,7 @@
     android:focusableInTouchMode="true"
     tools:context="com.example.barbershop.PhoneAuthentication"
     android:orientation="vertical"
+    android:id="@+id/phone_auth_container"
     >
 
 

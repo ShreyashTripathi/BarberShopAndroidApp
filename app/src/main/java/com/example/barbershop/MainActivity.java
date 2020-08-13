@@ -13,18 +13,11 @@ import com.example.barbershop.ui.FirstPage.FirstPage;
 import com.facebook.AccessToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String USER_COLLECTION_PATH = "Users";
-    private static final String EMAIL_FIELD = "email";
-    private static int SPLASH_SCREEN_TIME_OUT=2000;
-    private SharedPreferences mPreferences;
-    private String sharedPrefFile = "login";
     private AccessToken fb_token;
-    private String login_type,user_email,user_email_from_pref;
-    private FirebaseFirestore firestore;
+    private String login_type;
 
 
     @Override
@@ -32,17 +25,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        firestore = FirebaseFirestore.getInstance();
-        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        String sharedPrefFile = "login";
+        SharedPreferences mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         login_type = mPreferences.getString("login_type", "LoggedOut");
-        user_email_from_pref = mPreferences.getString("user_email","");
-
         //fb_token = AccessToken.getCurrentAccessToken();
-
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        int SPLASH_SCREEN_TIME_OUT = 2000;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -89,7 +90,7 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
-            public void onVerificationCompleted(PhoneAuthCredential credential) {
+            public void onVerificationCompleted(@NonNull final PhoneAuthCredential credential) {
                 Log.d(TAG, "onVerificationCompleted:" + credential);
                 mVerificationInProgress = false;
                 updateUI(STATE_VERIFY_SUCCESS, credential);
@@ -99,19 +100,18 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
                     public void checkAccountExists(boolean accountExists, User user) {
                         if(accountExists)
                         {
-                            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                            preferencesEditor.putString("user_email", user.getEmail());
-                            preferencesEditor.apply();
+                            if(user!=null) {
+                                LinearLayout linearLayout = findViewById(R.id.phone_auth_container);
+                                String loginType = user.getLoginType();
+                                Snackbar.make(linearLayout, "User already signed in using " + loginType, Snackbar.LENGTH_LONG).show();
+                            }
                         }
                         else {
-                            addUser(phone_number);
-                            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                            preferencesEditor.putString("user_phone", phone_number);
-                            preferencesEditor.apply();
+                            signInWithPhoneAuthCredential(credential);
                         }
                     }
                 });
-                signInWithPhoneAuthCredential(credential);
+
             }
 
             @Override
@@ -200,17 +200,17 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mVerificationInProgress = savedInstanceState.getBoolean(KEY_VERIFY_IN_PROGRESS);
     }
 
-    private void addUser(String phone) {
+    private void addUser(String phone,String userID) {
         User user = new User("","","",phone,null,"OTP");
         CollectionReference users = db.collection(USER_COLLECTION_PATH);
 
         Log.println(Log.INFO,"addUser","add User function running....");
-        users.document(phone).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+        users.document(userID).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful())
@@ -223,19 +223,7 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
                 }
             }
         });
-        /*users.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Log.println(Log.INFO,"addUser","User added....");
-                Toast.makeText(PhoneAuthentication.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
-                Log.println(Log.INFO,"addUser","Error: " + e);
-            }
-        });*/
+
     }
 
     private void checkAccountExistAlready(final String phone, final OnCheckAccountExists onCheckAccountExists) {
@@ -315,7 +303,12 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = task.getResult().getUser();
+                            FirebaseUser user = Objects.requireNonNull(task.getResult()).getUser();
+                            String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                            addUser(phone_number,userID);
+                            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+                            preferencesEditor.putString("userID", userID);
+                            preferencesEditor.apply();
                             updateUI(STATE_SIGNIN_SUCCESS, user);
                         } else {
                             // Sign in failed, display a message and update the UI
@@ -412,27 +405,6 @@ public class PhoneAuthentication extends AppCompatActivity implements View.OnCli
                 break;
         }
 
-        /*
-        if (user == null) {
-            // Signed out
-            phoneAuthField.setVisibility(View.VISIBLE);
-            signedInButtons.setVisibility(View.GONE);
-
-            mBinding.status.setText(R.string.signed_out);
-        } else {
-            // Signed in
-            mBinding.phoneAuthFields.setVisibility(View.GONE);
-            mBinding.signedInButtons.setVisibility(View.VISIBLE);
-
-            enableViews(mBinding.fieldPhoneNumber, mBinding.fieldVerificationCode);
-            mBinding.fieldPhoneNumber.setText(null);
-            mBinding.fieldVerificationCode.setText(null);
-
-            mBinding.status.setText(R.string.signed_in);
-            mBinding.detail.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-        }
-
-         */
     }
 
     private boolean validatePhoneNumber() {

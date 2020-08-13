@@ -19,8 +19,10 @@ import com.example.barbershop.R;
 import com.example.barbershop.adapters.AppointmentAdapter;
 import com.example.barbershop.models.AppointmentData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import global_class.MyGlobalClass;
 
@@ -40,17 +42,8 @@ public class AppointmentFragment extends Fragment {
         //initializeUI();
         String sharedPrefFile = "login";
         SharedPreferences mPreferences = requireActivity().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-        String email = mPreferences.getString("user_email","");
-        String phone = mPreferences.getString("user_phone","");
-        final String emailOrPhone;
-        if(!email.equals(""))
-        {
-            emailOrPhone = email;
-        }
-        else
-        {
-            emailOrPhone = phone;
-        }
+
+        final String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         appointment_rv = root.findViewById(R.id.appointment_list_rv);
         LinearLayoutManager llm = new LinearLayoutManager(requireActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -58,7 +51,7 @@ public class AppointmentFragment extends Fragment {
 
         MyGlobalClass myGlobalClass = (MyGlobalClass)requireActivity().getApplicationContext();
         String gender = myGlobalClass.getGender();
-        MutableLiveData <ArrayList<AppointmentData>> appointmentData = appointmentViewModel.getAppointmentData(emailOrPhone,gender);
+        MutableLiveData <ArrayList<AppointmentData>> appointmentData = appointmentViewModel.getAppointmentData(userID,gender);
         appointmentData.observe(requireActivity(), new Observer<ArrayList<AppointmentData>>() {
             @Override
             public void onChanged(ArrayList<AppointmentData> appointmentData) {
@@ -67,7 +60,7 @@ public class AppointmentFragment extends Fragment {
                     public void isBookingCancelled(boolean bookingStatus,AppointmentData appointmentData) {
                         Log.println(Log.INFO,TAG,"appointment data: " + appointmentData.getService_opted() + " : " + bookingStatus);
                         if(bookingStatus)          //is cancelled
-                            appointmentViewModel.setAppointmentStatus(appointmentData,emailOrPhone, false);
+                            appointmentViewModel.setAppointmentStatus(appointmentData,userID, false);
                     }
                 });
                 appointment_rv.setAdapter(adapter);

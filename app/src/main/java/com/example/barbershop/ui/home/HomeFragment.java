@@ -105,10 +105,6 @@ public class HomeFragment extends Fragment implements
             public void onLocationResult(LocationResult locationResult) {
                 // If tracking is turned on, reverse geocode into an address
                 if (mTrackingLocation && isAdded()) {
-                    /*double latitude = locationResult.getLastLocation().getLatitude();
-                    double longitude = locationResult.getLastLocation().getLongitude();
-                    MyGlobalClass myGlobalClass = (MyGlobalClass)getApplicationContext();
-                    myGlobalClass.setUser_location_coordinates(new Pair<Double, Double>(latitude,longitude));*/
                     new FetchAddressTask(requireActivity(), HomeFragment.this)
                             .execute(locationResult.getLastLocation());
                 }

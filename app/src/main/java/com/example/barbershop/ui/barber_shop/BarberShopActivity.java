@@ -1,7 +1,6 @@
 package com.example.barbershop.ui.barber_shop;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -26,12 +25,14 @@ import com.example.barbershop.models.BarberService;
 import com.example.barbershop.models.Shops;
 import com.example.barbershop.ui.book_appointment.BookAppointment;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class BarberShopActivity extends AppCompatActivity {
     private MutableLiveData<Shops> shopData;
@@ -47,7 +48,7 @@ public class BarberShopActivity extends AppCompatActivity {
     private Pair<Double,Double> loc_coordinates;
     private String shop_name_for_map_label;
     private LinearLayout insertPoint;
-    private SharedPreferences mPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +56,6 @@ public class BarberShopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_barber_shop);
         shopViewModel = new ViewModelProvider(this).get(ShopViewModel.class);
         initialize();
-        String sharedPrefFile = "login";
-         mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
 
         Intent intent = getIntent();
         final String shop_name_text = intent.getStringExtra("shop_name");
@@ -76,7 +75,6 @@ public class BarberShopActivity extends AppCompatActivity {
 
                 insertPoint = findViewById(R.id.service_list);
 
-                // fill in any details dynamically here
                 for(final BarberService _service : services)
                 {
                     LayoutInflater vi = LayoutInflater.from(BarberShopActivity.this);
@@ -84,7 +82,6 @@ public class BarberShopActivity extends AppCompatActivity {
                     v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
 
                     ImageView iv = v.findViewById(R.id.service_img);
-                    //iv.setImageURI(Uri.parse(_service.getService_img()));
                     Picasso.with(BarberShopActivity.this).load(_service.getService_img()).into(iv);
 
                     TextView tv1 = v.findViewById(R.id.service_name);
@@ -111,37 +108,21 @@ public class BarberShopActivity extends AppCompatActivity {
                 setShopData(shop);
             }
         });
-
-
-        //String login_type = mPreferences.getString("login_type", "LoggedOut");
-
-
     }
 
     private void setShopData(Shops shop) {
-        String user_email_from_pref = mPreferences.getString("user_email", "");
-        String user_phone = mPreferences.getString("user_phone", "");
-        final String emailOrPhone;
-        if(!user_email_from_pref.equals(""))
-        {
-            emailOrPhone = user_email_from_pref;
-        }
-        else
-        {
-            emailOrPhone = user_phone;
-        }
-
+        final String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         final String shopDocumentID = shop.getShopName()+"_"+shop.getPhone();
         favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(favButton.isChecked())
                 {
-                    shopViewModel.setShopAsFavourite(shopDocumentID,emailOrPhone);
+                    shopViewModel.setShopAsFavourite(shopDocumentID,userID);
                     Toast.makeText(BarberShopActivity.this, "Shop added to Favorite!", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    shopViewModel.removeShopFromFavourite(shopDocumentID,emailOrPhone);
+                    shopViewModel.removeShopFromFavourite(shopDocumentID,userID);
                     Toast.makeText(BarberShopActivity.this, "Shop removed from Favorite!", Toast.LENGTH_SHORT).show();
                 }
             }

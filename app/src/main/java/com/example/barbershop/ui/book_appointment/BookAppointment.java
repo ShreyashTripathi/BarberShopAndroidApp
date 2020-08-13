@@ -1,7 +1,6 @@
 package com.example.barbershop.ui.book_appointment;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import com.example.barbershop.R;
 import com.example.barbershop.adapters.WorkerAdapter;
 import com.example.barbershop.models.AppointmentData;
 import com.example.barbershop.models.Worker;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class BookAppointment extends AppCompatActivity {
 
@@ -125,21 +126,7 @@ public class BookAppointment extends AppCompatActivity {
             available_timings.addView(v);
         }
 
-        String sharedPrefFile = "login";
-        SharedPreferences mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-        String login_type = mPreferences.getString("login_type", "LoggedOut");
-        String user_email = mPreferences.getString("user_email","");
-        String user_phone = mPreferences.getString("user_phone","");
-        String emailOrPhone;
-
-        if(login_type.equals("OTP"))
-        {
-            emailOrPhone = user_phone;
-        }
-        else
-        {
-            emailOrPhone = user_email;
-        }
+        String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         /*MutableLiveData<User> userData =  viewModel.getUserData(emailOrPhone);
         userData.observe(this, new Observer<User>() {
             @Override
@@ -147,7 +134,7 @@ public class BookAppointment extends AppCompatActivity {
                 setUserData(user);
             }
         });*/
-        setUserData(emailOrPhone);
+        setUserData(userID);
 
     }
 

@@ -2,7 +2,6 @@ package com.example.barbershop.ui.settings;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,9 +35,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Objects;
 
-import static android.content.Context.MODE_PRIVATE;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsFragment extends Fragment {
 
@@ -49,8 +48,6 @@ public class SettingsFragment extends Fragment {
     private GoogleSignInOptions gso;
     private LinearLayout linear_list;
     private Configuration configuration;
-    private SharedPreferences mPreferences;
-    private String sharedPrefFile = "login";
     private TextView user_name_tv;
     private CircleImageView user_pic_civ;
     private ImageView drop_down;
@@ -86,21 +83,12 @@ public class SettingsFragment extends Fragment {
         button = view.findViewById(R.id.log_out);
         linear_list = view.findViewById(R.id.linear_list_view);
 
-        final String login_type = mPreferences.getString("login_type", "FirebaseSignIn");
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(login_type.equals("FacebookSignIn"))
-                {
-                    /*disconnectFromFacebook();
-                    */
-                }
-                else {
-                    FirebaseAuth.getInstance().signOut();
-                    signOutGoogleAccount();
-                }
+                FirebaseAuth.getInstance().signOut();
+                signOutGoogleAccount();
                 Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
             }
@@ -124,7 +112,6 @@ public class SettingsFragment extends Fragment {
                 .build();
         context = requireActivity();
         mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
-        mPreferences = requireContext().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         user_name_tv = view.findViewById(R.id.profile_name_setting);
         user_pic_civ = view.findViewById(R.id.profile_pic_setting);
         drop_down = view.findViewById(R.id.drop_down_icon_setting);
@@ -165,25 +152,12 @@ public class SettingsFragment extends Fragment {
 
     protected void updateUI() {
         drop_down.setImageResource(R.drawable.ic_outline_create_24);
-        String sharedPrefFile = "login";
-        SharedPreferences mPreferences = requireActivity().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-        String email = mPreferences.getString("user_email","");
-        String phone = mPreferences.getString("user_phone","");
-        final String emailOrPhone;
-        if(!email.equals(""))
-        {
-            emailOrPhone = email;
-        }
-        else
-        {
-            emailOrPhone = phone;
-        }
-        settingsViewModel.getUserData(emailOrPhone, new SettingsViewModel.OnGetUserData() {
+        String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        settingsViewModel.getUserData(userID, new SettingsViewModel.OnGetUserData() {
             @Override
             public void getUserData(User user) {
                 String name = user.getName();
                 String user_profile_pic = user.getUser_profile_pic();
-
                 user_name_tv.setText(name);
                 if(user.getUser_profile_pic() != null)
                     Picasso.with(getContext()).load(user_profile_pic).into(user_pic_civ);

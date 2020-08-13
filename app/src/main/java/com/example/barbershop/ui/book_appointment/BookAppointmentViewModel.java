@@ -26,10 +26,6 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class BookAppointmentViewModel extends ViewModel {
 
     private static final String TAG = "book_appt_view_model";
-    private static final String USER_COLLECTION_PATH = "Users";
-    private static final String EMAIL_FIELD = "email";
-    private static final String PHONE_FIELD = "phone";
-    private static final String SHOP_COLLECTION_PATH = "Shops";
     private static final String APPOINTMENT_COLLECTION_PATH = "Appointments";
     private MutableLiveData< ArrayList<Worker> > workers_list;
     private MutableLiveData<User> userData;
@@ -85,29 +81,6 @@ public class BookAppointmentViewModel extends ViewModel {
 
         return timingsAvailable;
     }
-
-   /* public MutableLiveData<User> getUserData(final String emailOrPhone)
-    {
-        //FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection(USER_COLLECTION_PATH).get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful())
-                        {
-                            for(QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
-                            {
-                                if(Objects.equals(document.get(EMAIL_FIELD), emailOrPhone) || Objects.equals(document.get(PHONE_FIELD), emailOrPhone))
-                                {
-                                    User user = document.toObject(User.class);
-                                    userData.setValue(user);
-                                }
-                            }
-                        }
-                    }
-                });
-        return userData;
-    }*/
 
     public void setAppointmentData(final AppointmentData appointmentData) {
 

@@ -2,7 +2,6 @@ package com.example.barbershop;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -43,6 +42,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 999;
@@ -63,8 +64,6 @@ public class LoginActivity extends AppCompatActivity {
 
     FloatingActionButton g_sign_in,otp_sign_in,fb_sign_in_;
     private CallbackManager callbackManager;
-    private SharedPreferences mPreferences;
-    private String sharedPrefFile = "login";
     private String TAG = "Link Tag";
     private String _email_user;
     private LinearLayout linearLayout;
@@ -80,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initializeInstances() {
 
+
         usernameLayout = findViewById(R.id.userNameInputLayout);
         passwordInputLayout = findViewById(R.id.passwordInputLayout);
         userNameEditText = findViewById(R.id.userNameEditText);
@@ -93,7 +93,6 @@ public class LoginActivity extends AppCompatActivity {
         otp_sign_in =findViewById(R.id.otp_sign_in_button);
 
         firebaseFirestore= FirebaseFirestore.getInstance();
-        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -189,19 +188,8 @@ public class LoginActivity extends AppCompatActivity {
             public void checkAccountExists(boolean accountExists,String loginType) {
                 if (accountExists && loginType.equals("EmailPassword")) {
                     progressBar.setVisibility(View.INVISIBLE);
-                    getFirestoreUser(userName, new OnGetFirestoreUser() {
-                        @Override
-                        public void getFirestoreUser(User user) {
-
-                        }
-                    });
-                    SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                    preferencesEditor.putString("login_type", "EmailSignIn");
-                    preferencesEditor.putString("user_email",userName);
-                    preferencesEditor.apply();
                     makeToast("First",LoginActivity.this);
-
-                    signInAccountWithFirebase(getEmailCredentials(userName,passWord));
+                    signInAccountWithFirebase(getEmailCredentials(userName,passWord),null,false);
                 }
                 else if(accountExists) {
                     Snackbar.make(linearLayout, "User already signed in using " + loginType, Snackbar.LENGTH_LONG).show();
@@ -362,26 +350,14 @@ public class LoginActivity extends AppCompatActivity {
                         public void checkAccountExists(boolean accountExists,String loginType) {
                             if (accountExists && loginType.equals("Google")) {
                                 progressBar.setVisibility(View.INVISIBLE);
-                                signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()));
-                                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                                preferencesEditor.putString("login_type", "GoogleSignIn");
-                                preferencesEditor.putString("user_email",account.getEmail());
-                                preferencesEditor.apply();
+                                signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()),account,false);
                             }
                             else if(accountExists) {
                                 Snackbar.make(linearLayout, "User already signed in using " + loginType, Snackbar.LENGTH_LONG).show();
                                 progressBar.setVisibility(View.INVISIBLE);
                             }else
                             {
-                                User user = new User(account.getDisplayName(),account.getEmail(),"","",null,"Google");
-                                if(account.getPhotoUrl() != null)
-                                    user.setUser_profile_pic(account.getPhotoUrl().toString());
-                                addAccountToFirestore(user);
-                                SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-                                preferencesEditor.putString("login_type", "GoogleSignIn");
-                                preferencesEditor.putString("user_email",account.getEmail());
-                                preferencesEditor.apply();
-                                signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()));
+                                signInAccountWithFirebase(getGoogleCredentials(account.getIdToken()),account,true);
                             }
                         }
                     });
@@ -394,17 +370,20 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void addAccountToFirestore(User user) {
+    private void addAccountToFirestore(User user,String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference users = db.collection(USER_COLLECTION_PATH);
         Log.println(Log.INFO,"addUser","add User function running....");
-        users.document(user.getEmail()).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+        users.document(userID).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful())
                 {
                     Log.println(Log.INFO,"addUser","User added....");
                     Toast.makeText(LoginActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, FirstPage.class);
+                    startActivity(intent);
+                    finish();
                 }
                 else
                 {
@@ -412,19 +391,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        /*users.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Log.println(Log.INFO,"addUser","User added....");
-                Toast.makeText(LoginActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
-                Log.println(Log.INFO,"addUser","Error: " + e);
-            }
-        });*/
+
 
     }
 
@@ -440,7 +407,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // ---------------------------------------  SIGN IN WITH CREDENTIAL START ----------------------------------------
 
-    public void signInAccountWithFirebase(final AuthCredential credential)
+    public void signInAccountWithFirebase(final AuthCredential credential, final GoogleSignInAccount account, final boolean toBeAdded)
     {
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -448,8 +415,20 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             progressBar.setVisibility(View.INVISIBLE);
-                            Intent intent = new Intent(LoginActivity.this, FirstPage.class);
-                            startActivity(intent);
+                            Log.println(Log.INFO,TAG,"Signed in successfully!");
+                            if(toBeAdded) {
+                                User user = new User(account.getDisplayName(),account.getEmail(),"","",null,"Google");
+                                if(account.getPhotoUrl() != null)
+                                    user.setUser_profile_pic(account.getPhotoUrl().toString());
+                                String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                                addAccountToFirestore(user,userId);
+                            }
+                            else
+                            {
+                                Intent intent = new Intent(LoginActivity.this, FirstPage.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else{
 
                             //handleUserCollisionException();

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,10 +35,13 @@ import com.example.barbershop.R;
 import com.example.barbershop.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,7 +55,6 @@ import java.util.UUID;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.MODE_PRIVATE;
 
 public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
 
@@ -63,7 +64,6 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
     private TextInputLayout nameUpdateLayout,emailUpdateLayout,passwordUpdateLayout,repeatPasswordUpdateLayout,phoneUpdateLayout;
     private TextInputEditText nameUpdateEditText,emailUpdateEditText,passwordUpdateEditText,repeatPasswordUpdateEditText,phoneUpdateEdiText;
     private Button saveButton;
-    private String emailOrPhone;
     private byte[] imgData;
     private View userView;
     private SettingsViewModel settingsViewModel;
@@ -81,20 +81,8 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
         initializeUI(view);
 
-        String sharedPrefFile = "login";
-        SharedPreferences mPreferences = requireActivity().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-        String email = mPreferences.getString("user_email","");
-        String phone = mPreferences.getString("user_phone","");
-
-        if(!email.equals(""))
-        {
-            emailOrPhone = email;
-        }
-        else
-        {
-            emailOrPhone = phone;
-        }
-        settingsViewModel.getUserData(emailOrPhone, new SettingsViewModel.OnGetUserData() {
+        final String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        settingsViewModel.getUserData(userID, new SettingsViewModel.OnGetUserData() {
             @Override
             public void getUserData(User user) {
                 if(isAdded()) {
@@ -126,7 +114,7 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsViewModel.getUserData(emailOrPhone, new SettingsViewModel.OnGetUserData() {
+                settingsViewModel.getUserData(userID, new SettingsViewModel.OnGetUserData() {
                     @Override
                     public void getUserData(final User user) {
                         final User tempUser = new User(nameUpdateEditText.getText().toString(),emailUpdateEditText.getText().toString(),passwordUpdateEditText.getText().toString(),phoneUpdateEdiText.getText().toString());
@@ -135,7 +123,9 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
                             public void IsUserInfoSame(boolean isSame) {
                                 if(!isSame)
                                 {
-                                    settingsViewModel.updateUserProfile(tempUser,emailOrPhone);
+                                    settingsViewModel.updateUserProfile(tempUser,userID);
+                                    if(!repeatPasswordUpdateEditText.getText().toString().equals(""))
+                                        updateFirebasePassword(emailUpdateEditText.getText().toString(),passwordUpdateEditText.getText().toString());
                                     Toast.makeText(userContext, "User Data Updated!", Toast.LENGTH_SHORT).show();
                                 }
                                 else {
@@ -148,7 +138,7 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
                                 @Override
                                 public void setImgUrl(String url,boolean isImageDataSet) {
                                     if(isImageDataSet && url != null)
-                                        settingsViewModel.setProfilePic(emailOrPhone,url);
+                                        settingsViewModel.setProfilePic(userID,url);
                                 }
                             });
 
@@ -160,6 +150,39 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
         return view;
     }
 
+    private void updateFirebasePassword(final String userEmail,final String newPassword) {
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            FirebaseAuth.getInstance().getCurrentUser().updatePassword(newPassword)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful())
+                            {
+                                signInFirebaseUser(userEmail,newPassword);
+                            }
+                            else {
+                                Log.println(Log.ERROR,TAG,""+task.getException());
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void signInFirebaseUser(String userEmail, String newPassword) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signInWithEmailAndPassword(userEmail,newPassword).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                Toast.makeText(userContext, "Firebase User Signed In!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.println(Log.ERROR,"Errors","Firebase sign In Error: " + e);
+            }
+        });
+    }
 
 
     private void initializeUI(View view) {
@@ -384,7 +407,6 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
     }
 
     private void checkAndUpdateImage(String imgUrl, final OnUploadUserProfilePic onUploadUserProfilePic) {
-        //TODO: first delete the old pic and then upload the image to a folder named according to user_id instead of UUID
         if(imgData != null && imgUrl != null) {
             FirebaseStorage storage_old = FirebaseStorage.getInstance();
             StorageReference storageReference_old = storage_old.getReferenceFromUrl(imgUrl);
@@ -465,22 +487,13 @@ public class UpdateProfileDialogFragment extends BottomSheetDialogFragment {
             ImageView drop_down = userView.findViewById(R.id.drop_down_icon_setting);
             ProgressBar progressBar = userView.findViewById(R.id.progressBarSetting);
             drop_down.setImageResource(R.drawable.ic_outline_create_24);
-            String sharedPrefFile = "login";
-            SharedPreferences mPreferences = requireActivity().getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-            String email = mPreferences.getString("user_email", "");
-            String phone = mPreferences.getString("user_phone", "");
-            final String emailOrPhone;
-            if (!email.equals("")) {
-                emailOrPhone = email;
-            } else {
-                emailOrPhone = phone;
-            }
 
+            final String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
             progressBar.setVisibility(View.VISIBLE);
             final Handler handler = new Handler();
             final Runnable r = new Runnable() {
                 public void run() {
-                    settingsViewModel.getUserData(emailOrPhone, new SettingsViewModel.OnGetUserData() {
+                    settingsViewModel.getUserData(userID, new SettingsViewModel.OnGetUserData() {
                         @Override
                         public void getUserData(User user) {
                             setUserData(user);

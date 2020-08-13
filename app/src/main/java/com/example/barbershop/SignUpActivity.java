@@ -392,8 +392,7 @@ public class SignUpActivity extends AppCompatActivity {
         void checkAccountExists(boolean accountExists,String loginType);
     }
 
-    private void addUser(final String name, final String email, final String password, final String phone) {
-
+    private void addUser(final String name, final String email, final String password, final String phone,final String userID) {
         if(imgData != null)
         {
             uploadUserProfilePic(imgData, new OnUploadUserProfilePic() {
@@ -403,17 +402,17 @@ public class SignUpActivity extends AppCompatActivity {
                     user.setUser_profile_pic(url);
                     CollectionReference users = db.collection(USER_COLLECTION_PATH);
 
-
                     Log.println(Log.INFO,"addUser","add User function running....");
-                    users.document(email).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    users.document(userID).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful())
                             {
                                 Log.println(Log.INFO,"addUser","User added....");
                                 Toast.makeText(SignUpActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
-
-                                signInAccountWithEmailFirebase(email,password);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                Intent intent = new Intent(SignUpActivity.this, FirstPage.class);
+                                startActivity(intent);
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -423,21 +422,6 @@ public class SignUpActivity extends AppCompatActivity {
                         }
                     });
 
-                    /*users.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.println(Log.INFO,"addUser","User added....");
-                            Toast.makeText(SignUpActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
-
-                            signInAccountWithEmailFirebase(email,password);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
-                            Log.println(Log.INFO,"addUser","Error: " + e);
-                        }
-                    });*/
                 }
             });
         }
@@ -446,13 +430,14 @@ public class SignUpActivity extends AppCompatActivity {
             CollectionReference users = db.collection(USER_COLLECTION_PATH);
 
             Log.println(Log.INFO, "addUser", "add User function running....");
-            users.document(email).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            users.document(userID).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Log.println(Log.INFO, "addUser", "User added....");
                     Toast.makeText(SignUpActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
-
-                    signInAccountWithEmailFirebase(email,password);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Intent intent = new Intent(SignUpActivity.this, FirstPage.class);
+                    startActivity(intent);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -460,22 +445,6 @@ public class SignUpActivity extends AppCompatActivity {
                     Log.println(Log.INFO, "addUser", "Error: " + e);
                 }
             });
-
-            /*users.add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-                    Log.println(Log.INFO, "addUser", "User added....");
-                    Toast.makeText(SignUpActivity.this, "User Added successfully!", Toast.LENGTH_SHORT).show();
-
-                    signInAccountWithEmailFirebase(email,password);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    //Toast.makeText(SignUpActivity.this, "User not added, error: " + e, Toast.LENGTH_LONG).show();
-                    Log.println(Log.INFO, "addUser", "Error: " + e);
-                }
-            });*/
 
         }
     }
@@ -542,28 +511,30 @@ public class SignUpActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    addUser(name,email,password,phone);
-
+                    //addUser(name,email,password,phone);
+                    signInAccountWithEmailFirebase(name,email,password,phone);
                 }
             }
         });
 
     }
 
-    private void signInAccountWithEmailFirebase(final String email, String password) {
+    private void signInAccountWithEmailFirebase(final String name, final String email, final String password, final String phone) {
         firebaseAuth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful())
                         {
+                            String userID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                             SharedPreferences.Editor preferencesEditor = mPreferences.edit();
                             preferencesEditor.putString("login_type", "EmailSignIn");
-                            preferencesEditor.putString("user_email",email);
+                            preferencesEditor.putString("userID",userID);
                             preferencesEditor.apply();
-                            progressBar.setVisibility(View.INVISIBLE);
+                            /*progressBar.setVisibility(View.INVISIBLE);
                             Intent intent = new Intent(SignUpActivity.this, FirstPage.class);
-                            startActivity(intent);
+                            startActivity(intent);*/
+                            addUser(name,email,password,phone,userID);
                         }
                         else
                         {
